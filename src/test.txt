@@ -1,0 +1,54 @@
+test
+
+
+import homeSlide1 from "./Images/home1.jpg";
+import homeSlide2 from "./Images/home2.jpg";
+import homeSlide3 from "./Images/home3.jpg";
+import homeSlide4 from "./Images/home4.jpg";
+  {/* <div
+        id="carouselExample"
+        className="carousel slide"
+        style={{ marginBottom: "20px" }}
+      >
+        <div className="carousel-inner">
+          {[homeSlide1, homeSlide2, homeSlide3, homeSlide4].map(
+            (slide, idx) => (
+              <div
+                key={idx}
+                className={`carousel-item ${idx === 0 ? "active" : ""}`}
+              >
+                <img
+                  src={slide}
+                  className="d-block w-100"
+                  alt={`slide-${idx + 1}`}
+                  style={{ maxHeight: "60vh", objectFit: "cover" }}
+                />
+              </div>
+            )
+          )}
+        </div>
+        <button
+          className="carousel-control-prev"
+          type="button"
+          data-bs-target="#carouselExample"
+          data-bs-slide="prev"
+        >
+          <span
+            className="carousel-control-prev-icon"
+            aria-hidden="true"
+          ></span>
+          <span className="visually-hidden">Previous</span>
+        </button>
+        <button
+          className="carousel-control-next"
+          type="button"
+          data-bs-target="#carouselExample"
+          data-bs-slide="next"
+        >
+          <span
+            className="carousel-control-next-icon"
+            aria-hidden="true"
+          ></span>
+          <span className="visually-hidden">Next</span>
+        </button>
+      </div> */}
