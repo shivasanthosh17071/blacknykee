@@ -4,7 +4,8 @@ import { useSelector } from "react-redux";
 import { Heart, Menu } from "lucide-react";
 import Login from "./login";
 import Register from "./register";
-
+import axios from "axios";
+import blackNykee from "./Images/BLacknykee.png";
 const categories = [
   "All",
   "Mobile",
@@ -26,17 +27,19 @@ const Header = ({
   setFilteredProducts,
   setAccountDetails,
   accountDetails,
+  showDropdown,
+  setShowDropdown,
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
+
   const [registerForm, setRegisterForm] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  const cartItems = useSelector((state) => state.cartItems);
+  const [cartLength, setCartLength] = useState(Number);
   const navigate = useNavigate();
-
+  console.log(cartLength);
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -60,13 +63,27 @@ const Header = ({
     setShowDropdown(false);
     setIsMenuOpen(false);
   };
+  useEffect(() => {
+    if (loginStatus.Id) {
+      axios
+        .get(`https://amazon-backend-k8m7.onrender.com/${loginStatus.Id}/cart`)
+        .then((res) => {
+          console.log(res?.data?.cartItems?.length);
+          setCartLength(res?.data?.cartItems?.length);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  }, []);
 
   return (
     <header
-      className={`fixed top-0 w-100  bg-black shadow-sm py-2  position-fixed top-0  z-1`}
+      style={{ zIndex: "10000" }}
+      className={`fixed top-0 w-100  bg-black shadow-sm py-2  position-fixed top-0  `}
     >
       <div className="container d-flex justify-content-between align-items-center">
-        <h1
+        {/* <h1
           className="m-0 fs-3 fw-bold text-white"
           style={{ cursor: "pointer" }}
           onClick={() => {
@@ -75,7 +92,15 @@ const Header = ({
           }}
         >
           Blacknykee
-        </h1>
+        </h1> */}
+        <img
+          onClick={() => {
+            navigate("/");
+            setShowDropdown(false);
+          }}
+          style={{ width: "210px", margin: "0px", cursor: "pointer" }}
+          src={blackNykee}
+        />
 
         <nav className="d-none d-md-flex gap-4 align-items-center">
           <span
@@ -111,11 +136,12 @@ const Header = ({
               <div
                 className="position-absolute mt-2 bg-white border rounded shadow p-3"
                 style={{
-                  zIndex: 1000,
+                  zIndex: "",
                   minWidth: "200px",
                   display: "grid",
                   gridTemplateColumns: "1fr 1fr",
                   gap: "10px",
+                  background: "red",
                 }}
               >
                 {categories.map((cat) => (
@@ -178,15 +204,6 @@ const Header = ({
         </nav>
 
         <div className="d-flex align-items-center gap-3">
-          <a
-            href="#search-bar"
-            onClick={() => {
-              navigate(isAdmin ? "/adminDashboard" : "/customerDashboard");
-            }}
-          >
-            <i className="bi bi-search text-white fs-5" />
-          </a>
-
           {loginStatus.Status && (
             <i
               className="bi bi-person text-white fs-5"
@@ -201,28 +218,32 @@ const Header = ({
             />
           )}
 
-          <div
-            onClick={() => {
-              if (loginStatus.Status == null) {
-                setShowLoginModal(true);
-              } else if (loginStatus.Status == true) {
-                navigate("/cart");
-              }
-            }}
-            style={{ cursor: "pointer" }}
-            className="position-relative"
-          >
-            <i
-              className={`bi ${
-                cartItems.length > 0 ? "bi-cart-check-fill" : "bi-cart"
-              } text-white fs-5`}
-            />
-            {cartItems.length > 0 && (
-              <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                {cartItems.length}
-              </span>
-            )}
-          </div>
+          {isAdmin ? (
+            ""
+          ) : (
+            <div
+              onClick={() => {
+                if (loginStatus.Status == null) {
+                  setShowLoginModal(true);
+                } else if (loginStatus.Status == true) {
+                  navigate("/cart");
+                }
+              }}
+              style={{ cursor: "pointer" }}
+              className="position-relative"
+            >
+              <i
+                className={`bi ${
+                  cartLength > 0 ? "bi-cart-check-fill" : "bi-cart"
+                } text-white fs-5`}
+              />
+              {cartLength > 0 && (
+                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  {cartLength}
+                </span>
+              )}
+            </div>
+          )}
 
           {loginStatus.Status ? (
             <i
@@ -255,20 +276,29 @@ const Header = ({
           <ul className="list-unstyled m-0">
             <li
               className="py-2 border-bottom border-secondary text-white"
-              onClick={() => navigate("/")}
+              onClick={() => {
+                navigate("/");
+                setIsMenuOpen(false);
+              }}
             >
               Home
             </li>
             <li
               className="py-2 border-bottom border-secondary text-white"
-              onClick={() =>
-                navigate(isAdmin ? "/adminDashboard" : "/customerDashboard")
-              }
+              onClick={() => {
+                navigate(isAdmin ? "/adminDashboard" : "/customerDashboard");
+                setIsMenuOpen(false);
+              }}
             >
               Catalog
             </li>
             <li className="py-2 border-bottom border-secondary text-white">
-              <span onClick={() => setShowDropdown(!showDropdown)}>
+              <span
+                onClick={() => {
+                  setShowDropdown(!showDropdown);
+                  setIsMenuOpen(false);
+                }}
+              >
                 Collections
               </span>
               {showDropdown && (
@@ -278,7 +308,10 @@ const Header = ({
                       key={cat}
                       className="text-white py-1"
                       style={{ cursor: "pointer" }}
-                      onClick={() => handleCategoryClick(cat)}
+                      onClick={() => {
+                        handleCategoryClick(cat);
+                        setIsMenuOpen(false);
+                      }}
                     >
                       {cat}
                     </li>
@@ -292,6 +325,7 @@ const Header = ({
                 onClick={() => {
                   navigate("/uploadProducts");
                   setIsMenuOpen(false);
+                  setIsMenuOpen(false);
                 }}
               >
                 Sell Products
@@ -303,12 +337,18 @@ const Header = ({
                 onClick={() => {
                   navigate("/orders");
                   setIsMenuOpen(false);
+                  setIsMenuOpen(false);
                 }}
               >
                 Returns & Orders
               </li>
             )}
-            <li className="py-2 border-bottom border-secondary text-white">
+            <li
+              onClick={() => {
+                setIsMenuOpen(false);
+              }}
+              className="py-2 border-bottom border-secondary text-white"
+            >
               Contact
             </li>
           </ul>

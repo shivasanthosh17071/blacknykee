@@ -1,6 +1,7 @@
 import React from "react";
 import "./App.css";
 import { NavLink, useNavigate } from "react-router-dom";
+import blackNykee from "./Images/BLacknykee.png";
 function Footer() {
   const navigate = useNavigate();
   return (
@@ -9,9 +10,11 @@ function Footer() {
         <div className="container">
           <div className="row g-4 mb-4">
             <div className="col-lg-4 mb-4 mb-lg-0">
-              <h3 className="fs-4 fw-bold mb-4" style={{ color: "#e63946" }}>
-                Blacknykee
-              </h3>
+              <img
+                onClick={() => {}}
+                style={{ width: "270px", margin: "0px", cursor: "pointer" }}
+                src={blackNykee}
+              />
               <p className="mb-4 text-light">
                 Premium quality products for those who demand the best. Shop
                 with confidence and style.

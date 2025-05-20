@@ -13,6 +13,7 @@ import banner1 from "./Images/banner1.png";
 import banner2 from "./Images/banner2.png";
 import banner3 from "./Images/banner3.png";
 import banner4 from "./Images/banner4.png";
+import banner5 from "./Images/banner5.png";
 function CustomerDashboard({
   filteredProducts,
   setFilteredProducts,
@@ -22,6 +23,8 @@ function CustomerDashboard({
   setLoginStatus,
   setAccountDetails,
   accountDetails,
+  showDropdown,
+  setShowDropdown,
 }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -107,7 +110,11 @@ function CustomerDashboard({
   }
 
   return (
-    <>
+    <div
+      onClick={() => {
+        setShowDropdown(false);
+      }}
+    >
       <div
         style={{
           backgroundImage:
@@ -133,6 +140,9 @@ function CustomerDashboard({
             <div class="carousel-item">
               <img src={banner4} class="d-block w-100" alt="..." />
             </div>
+            <div class="carousel-item">
+              <img src={banner5} class="d-block w-100" alt="..." />
+            </div>
           </div>
           <button
             class="carousel-control-prev"
@@ -155,12 +165,11 @@ function CustomerDashboard({
         </div>
         <div
           style={{
-            height: "70px",
             background: "red",
             position: "sticky",
-            top: "55px",
+            top: "72px",
             marginTop: "-50px",
-            zIndex: "1000",
+            zIndex: "100",
             overflow: "scroll",
           }}
           className="container bg-white shadow-sm rounded-4 px-4 py-3    "
@@ -238,7 +247,7 @@ function CustomerDashboard({
           </div>
         </div>
         {/* <br /> */}
-        <div className="container-fluid px-3 mt-4">
+        <div className="container-fluid px-3 mt-4" style={{ zIndex: "" }}>
           <div className="row row-cols-2 row-cols-sm-4 row-cols-md-5 row-cols-lg-6 g-3">
             {(filteredProducts.length === 0 ? product : filteredProducts).map(
               (item, i) => (
@@ -403,8 +412,8 @@ function CustomerDashboard({
         autoClose={2500}
       />
 
-      {loginStatus?.Status === true && <Footer />}
-    </>
+      {<Footer />}
+    </div>
   );
 }
 

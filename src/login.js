@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import Loader from "./loader";
 function Login({
   loginStatus,
   setLoginStatus,
@@ -12,6 +12,7 @@ function Login({
 }) {
   const [login, setLogin] = useState({ Email: "", Password: "" });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [loading, setLoading] = useState(false); 
   const navigate = useNavigate();
 
   function loginUserChange(field, value) {
@@ -20,9 +21,11 @@ function Login({
 
   function loginButton() {
     if (login?.Email && login?.Password) {
+      setLoading(true); // Show loader
       axios
         .post("https://amazon-backend-k8m7.onrender.com/login", login)
         .then((res) => {
+          setLoading(false); // Hide loader
           if (res?.data?.Message) {
             setLoginStatus({
               ...loginStatus,
@@ -47,6 +50,7 @@ function Login({
           }
         })
         .catch((err) => {
+          setLoading(false); // Hide loader
           console.log(err, "server issue");
         });
     } else {
@@ -92,7 +96,7 @@ function Login({
   return (
     <>
       <div
-        className="p-4 rounded "
+        className="p-4 rounded"
         style={{
           maxWidth: "400px",
           margin: "0 auto",
@@ -202,6 +206,9 @@ function Login({
           </span>
         </p>
       </div>
+
+      {/* 🔄 Loader Modal */}
+      {loading && <Loader />}
 
       {/* ✅ Success Modal */}
       {showSuccessModal && (

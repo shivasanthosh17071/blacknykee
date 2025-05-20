@@ -10,6 +10,7 @@ import "./ProductDetails.css";
 import Login from "./login";
 import Register from "./register";
 import { Heart } from "lucide-react";
+import Loader from "./loader";
 
 function ProductDetails({
   loginStatus,
@@ -144,7 +145,11 @@ function ProductDetails({
             style={{ minHeight: "320px" }}
           >
             {loading ? (
-              <div className="shimmer shimmer-img" />
+              <div>
+                {" "}
+                <div className="shimmer shimmer-img" />
+                <Loader />
+              </div>
             ) : productImage ? (
               <>
                 <img

@@ -35,6 +35,7 @@ function Cart({ loginStatus }) {
     axios
       .get(`https://amazon-backend-k8m7.onrender.com/${loginStatus.Id}/cart`)
       .then((res) => {
+        console.log(res);
         setCartItems(res.data.cartItems);
         setLoading(false);
       })

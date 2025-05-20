@@ -12,6 +12,7 @@ import banner1 from "./Images/banner1.png";
 import banner2 from "./Images/banner2.png";
 import banner3 from "./Images/banner3.png";
 import banner4 from "./Images/banner4.png";
+import banner5 from "./Images/banner5.png";
 
 function AdminDashboard({
   filteredProducts,
@@ -22,6 +23,8 @@ function AdminDashboard({
   setLoginStatus,
   setAccountDetails,
   accountDetails,
+  showDropdown,
+  setShowDropdown,
 }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -109,7 +112,12 @@ function AdminDashboard({
   }
 
   return (
-    <div style={{ height: "auto" }}>
+    <div
+      style={{ height: "auto" }}
+      onClick={() => {
+        setShowDropdown(false);
+      }}
+    >
       <div
         style={{}}
         id="carouselExampleAutoplaying"
@@ -128,6 +136,9 @@ function AdminDashboard({
           </div>
           <div class="carousel-item">
             <img src={banner4} class="d-block w-100" alt="..." />
+          </div>
+          <div class="carousel-item">
+            <img src={banner5} class="d-block w-100" alt="..." />
           </div>
         </div>
         <button
@@ -151,8 +162,12 @@ function AdminDashboard({
       </div>
       <div
         style={{
-          position: "relative",
+          background: "red",
+          position: "sticky",
+          top: "72px",
           marginTop: "-50px",
+          zIndex: "100",
+          overflow: "scroll",
         }}
         className="container bg-white shadow-sm rounded-4 px-4 py-3  "
       >
@@ -375,7 +390,7 @@ function AdminDashboard({
 
       <ToastContainer position="bottom-right" autoClose={2000} />
 
-      {loginStatus?.Status && <Footer />}
+      {<Footer />}
     </div>
   );
 }

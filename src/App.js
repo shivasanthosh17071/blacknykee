@@ -32,6 +32,7 @@ function App() {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [accountDetails, setAccountDetails] = useState();
   const [userSearch, setUserSearch] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
   // console.log(loginStatus);
   return (
     <div>
@@ -47,6 +48,8 @@ function App() {
           setFilteredProducts={setFilteredProducts}
           accountDetails={accountDetails}
           setAccountDetails={setAccountDetails}
+          setShowDropdown={setShowDropdown}
+          showDropdown={showDropdown}
         />
 
         <Routes>
@@ -75,6 +78,8 @@ function App() {
                 setLoginStatus={setLoginStatus}
                 setAccountDetails={setAccountDetails}
                 accountDetails={accountDetails}
+                setShowDropdown={setShowDropdown}
+                showDropdown={showDropdown}
               />
             }
           />
@@ -91,6 +96,8 @@ function App() {
                   setLoginStatus={setLoginStatus}
                   setAccountDetails={setAccountDetails}
                   accountDetails={accountDetails}
+                  setShowDropdown={setShowDropdown}
+                  showDropdown={showDropdown}
                 />
               ) : (
                 <Navigate to={"/"} />
