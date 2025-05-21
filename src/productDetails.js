@@ -152,6 +152,7 @@ function ProductDetails({
               </div>
             ) : productImage ? (
               <>
+                {console.log(productImage)}
                 <img
                   src={productImage}
                   className="img-fluid rounded w-100"

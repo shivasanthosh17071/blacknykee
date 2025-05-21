@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js"; // needed for dropdowns
 
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Route, Routes, BrowserRouter, Navigate } from "react-router-dom";
 import Register from "./register";
 import Login from "./login";
@@ -33,6 +33,20 @@ function App() {
   const [accountDetails, setAccountDetails] = useState();
   const [userSearch, setUserSearch] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
+  // console.log(loginStatus);
+
+  useEffect(() => {
+    const storedStatus = sessionStorage.getItem("loginStatus");
+    const storedDetails = sessionStorage.getItem("accountDetails");
+
+    if (storedStatus) {
+      setLoginStatus(JSON.parse(storedStatus));
+    }
+
+    if (storedDetails) {
+      setAccountDetails(JSON.parse(storedDetails));
+    }
+  }, []);
   // console.log(loginStatus);
   return (
     <div>

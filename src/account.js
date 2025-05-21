@@ -45,7 +45,7 @@ function Account({ accountDetails, setAccountDetails, loginStatus }) {
     users.find((u) => u.Email === accountDetails.Email)?.orders || [];
 
   return (
-    <div className="container my-4 px-2 px-md-4">
+    <div className="container  px-2 px-md-4 " style={{ marginTop: "50px" }}>
       {loginStatus.Role === 0 ? (
         // Customer View
         <div className="row g-4">
@@ -265,7 +265,8 @@ function Account({ accountDetails, setAccountDetails, loginStatus }) {
 
           {/* Modal */}
           <div
-            className="modal fade"
+            style={{ marginTop: "50px" }}
+            className="modal fade "
             id="userOrdersModal"
             tabIndex="-1"
             aria-labelledby="userOrdersModalLabel"

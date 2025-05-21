@@ -132,7 +132,7 @@ function Cart({ loginStatus }) {
   };
 
   return (
-    <div className="container py-3">
+    <div className="container py-3 mt-3">
       {/* Main Cart and Summary */}
       <div className="row">
         {/* Left column: Cart items */}

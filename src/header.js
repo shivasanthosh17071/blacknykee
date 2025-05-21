@@ -39,7 +39,7 @@ const Header = ({
 
   const [cartLength, setCartLength] = useState(Number);
   const navigate = useNavigate();
-  console.log(cartLength);
+  // console.log(cartLength);
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -80,7 +80,7 @@ const Header = ({
   return (
     <header
       style={{ zIndex: "10000" }}
-      className={`fixed top-0 w-100  bg-black shadow-sm py-2  position-fixed top-0  `}
+      className={`fixed top-0 w-100  bg-black shadow-sm py-1  position-fixed top-0  `}
     >
       <div className="container d-flex justify-content-between align-items-center">
         {/* <h1
@@ -436,6 +436,8 @@ const Header = ({
                   className="btn btn-danger px-4"
                   onClick={() => {
                     setLoginStatus([]);
+                    sessionStorage.removeItem("loginStatus");
+                    sessionStorage.removeItem("accountDetails");
                     setShowLogoutModal(false);
                     navigate("/");
                   }}

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Loader from "./loader";
+
 function Login({
   loginStatus,
   setLoginStatus,
@@ -12,7 +13,8 @@ function Login({
 }) {
   const [login, setLogin] = useState({ Email: "", Password: "" });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [loading, setLoading] = useState(false); 
+  const [showServerIssueModal, setShowServerIssueModal] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   function loginUserChange(field, value) {
@@ -35,23 +37,55 @@ function Login({
           } else if (res?.data?.Success) {
             setTimeout(() => {
               const user = res?.data?.usersDetails;
-              setLoginStatus({
-                ...loginStatus,
+
+              const newLoginStatus = {
                 Status: true,
                 Message: res?.data?.Success,
                 Role: user?.Role,
                 Name: user?.Name,
                 Id: user?._id,
-              });
+              };
+              sessionStorage.removeItem("loginStatus");
+              sessionStorage.removeItem("accountDetails");
+              // ✅ Save both to localStorage
+              sessionStorage.setItem(
+                "loginStatus",
+                JSON.stringify(newLoginStatus)
+              );
+              sessionStorage.setItem("accountDetails", JSON.stringify(user));
 
+              setLoginStatus(newLoginStatus);
               setAccountDetails(user);
               setShowSuccessModal(true);
-            }, 2000);
+            }, 1000);
           }
+          // {
+          //             setTimeout(() => {
+          //               const user = res?.data?.usersDetails;
+          //               setLoginStatus({
+          //                 ...loginStatus,
+          //                 Status: true,
+          //                 Message: res?.data?.Success,
+          //                 Role: user?.Role,
+          //                 Name: user?.Name,
+          //                 Id: user?._id,
+          //               });
+
+          //               setAccountDetails(user);
+          //               setShowSuccessModal(true);
+
+          //               // Optional: auto-close modal after success
+          //               setTimeout(() => {
+          //                 setShowSuccessModal(false);
+          //                 setShowLoginModal(false);
+          //               }, 3000);
+          //             }, 1000);
+          //           }
         })
         .catch((err) => {
-          setLoading(false); // Hide loader
+          setLoading(false);
           console.log(err, "server issue");
+          setShowServerIssueModal(true);
         });
     } else {
       alert("Please fill in all fields.");
@@ -79,6 +113,14 @@ function Login({
     maxWidth: "400px",
     width: "90%",
     boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+    transform: "scale(0.95)",
+    opacity: 0,
+    transition: "all 0.3s ease-in-out",
+  };
+
+  const fadeInStyle = {
+    transform: "scale(1)",
+    opacity: 1,
   };
 
   const exploreButtonStyle = {
@@ -207,13 +249,16 @@ function Login({
         </p>
       </div>
 
-      {/* 🔄 Loader Modal */}
+      {/* 🔄 Loader */}
       {loading && <Loader />}
 
       {/* ✅ Success Modal */}
       {showSuccessModal && (
         <div className="modal-backdrop" style={modalBackdropStyle}>
-          <div className="modal-content" style={modalContentStyle}>
+          <div
+            className="modal-content"
+            style={{ ...modalContentStyle, ...fadeInStyle }}
+          >
             <h5 style={{ color: "green", fontWeight: "bold" }}>
               ✅ Login Successful!
             </h5>
@@ -228,6 +273,41 @@ function Login({
               style={exploreButtonStyle}
             >
               Explore Now
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ❌ Server Issue Modal */}
+      {showServerIssueModal && (
+        <div className="modal-backdrop" style={modalBackdropStyle}>
+          <div
+            className="modal-content"
+            style={{
+              ...modalContentStyle,
+              border: "1px solid red",
+              ...fadeInStyle,
+            }}
+          >
+            <h5 className=" fw-bold mb-3"> Server Error</h5>
+            <p className="text-muted">
+              Sorry! A server issue occurred. <br />
+              Please try again after refreshing the page.
+            </p>
+            <button
+              style={{
+                backgroundColor: "red",
+                color: "#fff",
+                fontWeight: "600",
+                marginTop: "10px",
+                borderRadius: "5px",
+                padding: "10px",
+                transition: "0.3s",
+              }}
+              className="btn  w-100 mt-3"
+              onClick={() => setShowServerIssueModal(false)}
+            >
+              Close
             </button>
           </div>
         </div>
