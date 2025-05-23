@@ -13,6 +13,7 @@ import banner2 from "./Images/banner2.png";
 import banner3 from "./Images/banner3.png";
 import banner4 from "./Images/banner4.png";
 import banner5 from "./Images/banner5.png";
+import BASE_URL from "./config/api";
 
 function AdminDashboard({
   filteredProducts,
@@ -34,19 +35,19 @@ function AdminDashboard({
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [registerForm, setRegisterForm] = useState(false);
   const [pageReRender, setPageReRender] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const isAdmin = loginStatus.Status && loginStatus.Role === 1;
-
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
 
   useEffect(() => {
-    axios
-      .get("https://amazon-backend-k8m7.onrender.com/getProducts")
-      .then((res) => {
-        setProduct(res.data.result);
-        setFilteredProducts(res.data.result);
-      });
+    setLoading(true);
+    axios.get(`${BASE_URL}/getProducts`).then((res) => {
+      setProduct(res.data.result);
+      setFilteredProducts(res.data.result);
+      setLoading(false);
+    });
   }, [pageReRender]);
 
   useEffect(() => {
@@ -94,9 +95,7 @@ function AdminDashboard({
 
   function handleDeleteConfirmed() {
     axios
-      .delete(
-        `https://amazon-backend-k8m7.onrender.com/deleteProduct/${productToDelete}`
-      )
+      .delete(`${BASE_URL}/deleteProduct/${productToDelete}`)
       .then((res) => {
         if (res.data.success) {
           setPageReRender((prev) => !prev);
@@ -118,199 +117,213 @@ function AdminDashboard({
         setShowDropdown(false);
       }}
     >
+      {/* Banner Carousel */}
       <div
-        style={{}}
         id="carouselExampleAutoplaying"
-        class="carousel slide"
+        className="carousel slide"
         data-bs-ride="carousel"
       >
-        <div class="carousel-inner">
-          <div class="carousel-item active">
-            <img src={banner1} class="d-block w-100" alt="..." />
-          </div>
-          <div class="carousel-item">
-            <img src={banner2} class="d-block w-100" alt="..." />
-          </div>
-          <div class="carousel-item">
-            <img src={banner3} class="d-block w-100" alt="..." />
-          </div>
-          <div class="carousel-item">
-            <img src={banner4} class="d-block w-100" alt="..." />
-          </div>
-          <div class="carousel-item">
-            <img src={banner5} class="d-block w-100" alt="..." />
-          </div>
+        <div className="carousel-inner">
+          {[banner1, banner2, banner3, banner4, banner5].map((img, i) => (
+            <div key={i} className={`carousel-item ${i === 0 ? "active" : ""}`}>
+              <img src={img} className="d-block w-100" alt="banner" />
+            </div>
+          ))}
         </div>
         <button
-          class="carousel-control-prev"
+          className="carousel-control-prev"
           type="button"
           data-bs-target="#carouselExampleAutoplaying"
           data-bs-slide="prev"
         >
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Previous</span>
+          <span
+            className="carousel-control-prev-icon"
+            aria-hidden="true"
+          ></span>
+          <span className="visually-hidden">Previous</span>
         </button>
         <button
-          class="carousel-control-next"
+          className="carousel-control-next"
           type="button"
           data-bs-target="#carouselExampleAutoplaying"
           data-bs-slide="next"
         >
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Next</span>
+          <span
+            className="carousel-control-next-icon"
+            aria-hidden="true"
+          ></span>
+          <span className="visually-hidden">Next</span>
         </button>
       </div>
+
+      {/* Filters */}
       <div
-        style={{
-          background: "red",
-          position: "sticky",
-          top: "72px",
-          marginTop: "-50px",
-          zIndex: "100",
-          overflow: "scroll",
-        }}
-        className="container bg-white shadow-sm rounded-4 px-4 py-3  "
+        className="d-flex flex-nowrap align-items-center gap-2 bg-light px-2 py-2 sticky-top"
+        style={{ top: "72px", zIndex: 100 }}
       >
-        <div className="row gy-2 gx-3 align-items-center">
-          {/* Search Bar */}
-          <div className="col-12 col-md-4">
-            <div className="input-group">
-              <span className="input-group-text bg-light border-0">
-                <i className="bi bi-search"></i>
-              </span>
-              <input
-                type="text"
-                className=" form-control border-0 shadow-sm"
-                id="search-bar"
-                placeholder="Search for products..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {/* Category Filter */}
-          <div className="col-6 col-md-3">
-            <div className="input-group">
-              <span className="input-group-text bg-light border-0">
-                <i className="bi bi-filter-square"></i>
-              </span>
-              <select
-                className="form-select border-0 shadow-sm"
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-              >
-                <option value="All">All Categories</option>
-                <option value="Mobile">Mobile</option>
-                <option value="Laptop">Laptop</option>
-                <option value="Tv">Tv</option>
-                <option value="Dress"> Dress</option>
-                <option value="Shoes">Shoes</option>
-                <option value="Book">Book</option>
-                <option value="Beauty">Beauty</option>
-                <option value="Jewellery">Jewellery</option>
-                <option value="Watch">Watch</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Sort By */}
-          <div className="col-6 col-md-3">
-            <div className="input-group">
-              <span className="input-group-text bg-light border-0">
-                <i className="bi bi-sort-down"></i>
-              </span>
-              <select
-                className="form-select border-0 shadow-sm"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-              >
-                <option value="">Sort by</option>
-                <option value="low">Price: Low to High</option>
-                <option value="high">Price: High to Low</option>
-                <option value="rating">Top Rated</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Reset Filters Button */}
-          <div className="col-12 col-md-2 d-grid">
-            <button
-              className="btn btn-outline-secondary rounded-pill shadow-sm"
-              onClick={resetFilters}
-            >
-              <i className="bi bi-arrow-repeat me-1"></i> Reset
-            </button>
-          </div>
+        {/* Search Bar */}
+        <div
+          className="input-group input-group-sm"
+          style={{ minWidth: "180px" }}
+        >
+          <span className="input-group-text bg-light border-0">
+            <i className="bi bi-search"></i>
+          </span>
+          <input
+            type="text"
+            className="form-control border-0 shadow-sm"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
+
+        {/* Category */}
+        <div
+          className="input-group input-group-sm"
+          style={{ minWidth: "150px" }}
+        >
+          <span className="input-group-text bg-light border-0">
+            <i className="bi bi-filter-square"></i>
+          </span>
+          <select
+            className="form-select border-0 shadow-sm"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
+            <option value="All">All</option>
+            <option value="Mobile">Mobile</option>
+            <option value="Laptop">Laptop</option>
+            <option value="Tv">Tv</option>
+            <option value="Dress">Dress</option>
+            <option value="Shoes">Shoes</option>
+            <option value="Book">Book</option>
+            <option value="Beauty">Beauty</option>
+            <option value="Jewellery">Jewellery</option>
+            <option value="Watch">Watch</option>
+          </select>
+        </div>
+
+        {/* Sort By */}
+        <div
+          className="input-group input-group-sm"
+          style={{ minWidth: "150px" }}
+        >
+          <span className="input-group-text bg-light border-0">
+            <i className="bi bi-sort-down"></i>
+          </span>
+          <select
+            className="form-select border-0 shadow-sm"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+          >
+            <option value="">Sort</option>
+            <option value="low">Low → High</option>
+            <option value="high">High → Low</option>
+            <option value="rating">Top Rated</option>
+          </select>
+        </div>
+
+        {/* Reset */}
+        <button
+          className="btn btn-outline-secondary btn-sm rounded-pill shadow-sm"
+          onClick={resetFilters}
+        >
+          <i className="bi bi-arrow-repeat"></i>
+        </button>
       </div>
 
       {/* Product Grid */}
       <div className="container-fluid px-3 mt-4">
         <div className="row row-cols-2 row-cols-sm-4 row-cols-md-5 row-cols-lg-6 g-3">
-          {(filteredProducts.length === 0 ? product : filteredProducts).map(
-            (item, i) => (
-              <div className="col" key={i}>
-                <div className="card shadow-lg border-light rounded h-100 p-2">
-                  <img
-                    src={`data:image/jpeg;base64,${Buffer.from(
-                      item.Thumbnail.data
-                    ).toString("base64")}`}
-                    className="card-img-top"
-                    style={{
-                      height: "180px",
-                      objectFit: "cover",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => navigate(`/product/${item._id}`)}
-                    alt="Product"
-                  />
-                  <div className="card-body d-flex flex-column justify-content-between p-2">
-                    <b className="card-title" style={{ fontSize: "14px" }}>
-                      {item.Title}
-                    </b>
-                    <p className="mb-1">
-                      <b>Price:</b> {item.Price} /-
-                    </p>
-                    <p className="mb-1">
-                      <b>Rating:</b>{" "}
-                      <span
-                        style={{
-                          color: "white",
-                          backgroundColor:
-                            item?.Rating >= 4 ? "#28a745" : "#fd7e14",
-                          padding: "2px 6px",
-                          borderRadius: "12px",
-                          fontWeight: "bold",
-                          fontSize: "12px",
-                        }}
-                      >
-                        {item?.Rating} <i className="bi bi-star-fill ms-1"></i>
-                      </span>
-                    </p>
-                    {/* <p className="mb-1">
-                      <b>Category:</b> {item.Description}
-                    </p> */}
-                    <button
-                      className="btn mt-auto w-100 "
+          {loading
+            ? [...Array(12)].map((_, i) => (
+                <div className="col" key={i}>
+                  <div className="card shadow-sm border-light rounded h-100 p-2">
+                    <div
+                      className="shimmer mb-2"
+                      style={{ height: "180px", borderRadius: "4px" }}
+                    ></div>
+                    <div
+                      className="shimmer"
+                      style={{ height: "20px", marginBottom: "6px" }}
+                    ></div>
+                    <div
+                      className="shimmer"
                       style={{
-                        backgroundColor: "#dc3545",
-                        color: "white",
-                        fontWeight: "bold",
+                        height: "15px",
+                        width: "60%",
+                        marginBottom: "6px",
                       }}
-                      onClick={() => confirmDelete(item._id)}
-                    >
-                      Remove
-                    </button>
+                    ></div>
+                    <div
+                      className="shimmer"
+                      style={{ height: "15px", width: "40%" }}
+                    ></div>
                   </div>
                 </div>
-              </div>
-            )
-          )}
+              ))
+            : (filteredProducts.length === 0 ? product : filteredProducts).map(
+                (item, i) => (
+                  <div className="col" key={i}>
+                    <div className="card shadow-lg border-light rounded h-100 p-2">
+                      <img
+                        src={`data:image/jpeg;base64,${Buffer.from(
+                          item.Thumbnail.data
+                        ).toString("base64")}`}
+                        className="card-img-top"
+                        style={{
+                          height: "180px",
+                          objectFit: "cover",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => navigate(`/product/${item._id}`)}
+                        alt="Product"
+                      />
+                      <div className="card-body d-flex flex-column justify-content-between p-2">
+                        <b className="card-title" style={{ fontSize: "14px" }}>
+                          {item.Title}
+                        </b>
+                        <p className="mb-1">
+                          <b>Price:</b> {item.Price} /-
+                        </p>
+                        <p className="mb-1">
+                          <b>Rating:</b>{" "}
+                          <span
+                            style={{
+                              color: "white",
+                              backgroundColor:
+                                item?.Rating >= 4 ? "#28a745" : "#fd7e14",
+                              padding: "2px 6px",
+                              borderRadius: "12px",
+                              fontWeight: "bold",
+                              fontSize: "12px",
+                            }}
+                          >
+                            {item?.Rating}{" "}
+                            <i className="bi bi-star-fill ms-1"></i>
+                          </span>
+                        </p>
+                        <button
+                          className="btn mt-auto w-100"
+                          style={{
+                            backgroundColor: "#dc3545",
+                            color: "white",
+                            fontWeight: "bold",
+                          }}
+                          onClick={() => confirmDelete(item._id)}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )
+              )}
         </div>
       </div>
 
-      {/* Delete Confirmation Modal */}
+      {/* Modals and Footer */}
       {deleteModalVisible && (
         <div
           className="modal fade show d-block"
@@ -351,7 +364,6 @@ function AdminDashboard({
       {showLoginModal && (
         <div
           className="modal fade show d-block"
-          tabIndex="-1"
           style={{
             backgroundColor: "rgba(0,0,0,0.6)",
             backdropFilter: "blur(6px)",
@@ -389,8 +401,7 @@ function AdminDashboard({
       )}
 
       <ToastContainer position="bottom-right" autoClose={2000} />
-
-      {<Footer />}
+      <Footer />
     </div>
   );
 }

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Loader from "./loader";
-
+import BASE_URL from "./config/api";
 function Login({
   loginStatus,
   setLoginStatus,
@@ -16,7 +16,7 @@ function Login({
   const [showServerIssueModal, setShowServerIssueModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
+  console.log(BASE_URL);
   function loginUserChange(field, value) {
     setLogin({ ...login, [field]: value });
   }
@@ -25,7 +25,7 @@ function Login({
     if (login?.Email && login?.Password) {
       setLoading(true); // Show loader
       axios
-        .post("https://amazon-backend-k8m7.onrender.com/login", login)
+        .post(`${BASE_URL}/login`, login)
         .then((res) => {
           setLoading(false); // Hide loader
           if (res?.data?.Message) {

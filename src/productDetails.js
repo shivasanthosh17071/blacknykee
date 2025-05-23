@@ -9,8 +9,8 @@ import "react-toastify/dist/ReactToastify.css";
 import "./ProductDetails.css";
 import Login from "./login";
 import Register from "./register";
-import { Heart } from "lucide-react";
 import Loader from "./loader";
+import BASE_URL from "./config/api";
 
 function ProductDetails({
   loginStatus,
@@ -27,17 +27,17 @@ function ProductDetails({
   const [registerForm, setRegisterForm] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [pageReRender, setPageReRender] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false); // <- NEW
 
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`https://amazon-backend-k8m7.onrender.com/getProduct/${params}`)
+      .get(`${BASE_URL}/getProduct/${params}`)
       .then((res) => {
         const product = res?.data?.result;
         setProduct(product);
-
         axios
-          .get("https://amazon-backend-k8m7.onrender.com/getProducts")
+          .get(`${BASE_URL}/getProducts`)
           .then((response) => {
             const filtered = response.data.result.filter(
               (p) => p.Category === product.Category && p._id !== product._id
@@ -48,7 +48,7 @@ function ProductDetails({
           .catch((err) => console.log(err));
       })
       .catch((err) => console.log(err));
-  }, [params]);
+  }, [params, pageReRender]);
 
   const productImage = product?.Thumbnail?.data
     ? `data:image/jpeg;base64,${Buffer.from(product.Thumbnail.data).toString(
@@ -61,19 +61,16 @@ function ProductDetails({
       setShowLoginModal(true);
     } else if (loginStatus.Status == true) {
       axios
-        .post(
-          `https://amazon-backend-k8m7.onrender.com/${loginStatus.Id}/addToCart`,
-          {
-            Title: item.Title,
-            Price: item.Price,
-            Category: item.Description,
-            Rating: item.Rating,
-            Thumbnail: `data:image/jpeg;base64,${Buffer.from(
-              item.Thumbnail.data
-            ).toString("base64")}`,
-            Id: item._id,
-          }
-        )
+        .post(`${BASE_URL}/${loginStatus.Id}/addToCart`, {
+          Title: item.Title,
+          Price: item.Price,
+          Category: item.Description,
+          Rating: item.Rating,
+          Thumbnail: `data:image/jpeg;base64,${Buffer.from(
+            item.Thumbnail.data
+          ).toString("base64")}`,
+          Id: item._id,
+        })
         .then((res) => {
           console.log(res);
         })
@@ -113,46 +110,40 @@ function ProductDetails({
       });
     }
   };
+
   function deleteProduct(id) {
     axios
-      .delete(`https://amazon-backend-k8m7.onrender.com/deleteProduct/${id}`)
+      .delete(`${BASE_URL}/deleteProduct/${id}`)
       .then((res) => {
         if (res.data.success) {
           setPageReRender(!pageReRender);
+          setShowConfirmModal(false); // close modal
           toast("Product Deleted Successfully", {
             style: { color: "black", backgroundColor: "white" },
           });
+          navigate("/adminDashboard"); // optional redirect
         }
       })
       .catch((err) => {
         console.error(err);
       });
   }
+
   return (
     <div className="container mt-5">
-      {/* <div className="text-center mb-5">
-        <h2 style={{ color: "red", fontWeight: "bold" }}>Product Details</h2>
-        <p style={{ color: "#555" }}>
-          Explore this product and find more in the same category.
-        </p>
-      </div> */}
-
       <div className="row">
-        {/* Product Image */}
         <div className="col-lg-6 mb-4">
           <div
             className="position-relative p-3 border rounded bg-white"
             style={{ minHeight: "320px" }}
           >
             {loading ? (
-              <div>
-                {" "}
+              <>
                 <div className="shimmer shimmer-img" />
                 <Loader />
-              </div>
+              </>
             ) : productImage ? (
               <>
-                {console.log(productImage)}
                 <img
                   src={productImage}
                   className="img-fluid rounded w-100"
@@ -174,7 +165,6 @@ function ProductDetails({
           </div>
         </div>
 
-        {/* Product Details */}
         <div className="col-lg-6 mb-4">
           <div className="p-4 bg-white border border-danger rounded-4 shadow-sm">
             {loading ? (
@@ -223,20 +213,18 @@ function ProductDetails({
                 </p>
 
                 {loginStatus.Role == 1 ? (
-                  <>
-                    <button
-                      type="button"
-                      className="btn w-100"
-                      style={{
-                        backgroundColor: "black",
-                        color: "white",
-                        fontWeight: "bold",
-                      }}
-                      onClick={() => deleteProduct(product._id)}
-                    >
-                      Delete Product
-                    </button>
-                  </>
+                  <button
+                    type="button"
+                    className="btn w-100"
+                    style={{
+                      backgroundColor: "black",
+                      color: "white",
+                      fontWeight: "bold",
+                    }}
+                    onClick={() => setShowConfirmModal(true)}
+                  >
+                    Delete Product
+                  </button>
                 ) : (
                   <>
                     <button
@@ -261,7 +249,6 @@ function ProductDetails({
 
       <hr className="my-5" />
 
-      {/* Related Products Section */}
       <div className="mt-5">
         <h4 className="text-center text-danger mb-4">Related Products</h4>
         {loading ? (
@@ -312,7 +299,6 @@ function ProductDetails({
         )}
       </div>
 
-      {/* Login Modal */}
       {showLoginModal && (
         <div
           className="modal fade show d-block"
@@ -347,6 +333,49 @@ function ProductDetails({
                     setRegisterForm={setRegisterForm}
                   />
                 )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showConfirmModal && (
+        <div
+          className="modal fade show d-block"
+          tabIndex="-1"
+          style={{
+            backgroundColor: "rgba(0,0,0,0.6)",
+            backdropFilter: "blur(6px)",
+          }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title text-danger">Confirm Deletion</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowConfirmModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                Are you sure you want to delete <strong>{product.Title}</strong>
+                ?
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setShowConfirmModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="btn btn-danger"
+                  onClick={() => deleteProduct(product._id)}
+                >
+                  Yes, Delete
+                </button>
               </div>
             </div>
           </div>

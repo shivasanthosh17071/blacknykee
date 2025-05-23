@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import BASE_URL from "./config/api";
 
 const MyOrders = ({ loginStatus }) => {
   const [users, setUsers] = useState([]);
@@ -9,9 +10,7 @@ const MyOrders = ({ loginStatus }) => {
   const [filteredOrders, setFilteredOrders] = useState([]);
   const navigate = useNavigate();
   useEffect(() => {
-    axios("https://amazon-backend-k8m7.onrender.com/getusers").then((res) =>
-      setUsers(res.data)
-    );
+    axios(`${BASE_URL}/getusers`).then((res) => setUsers(res.data));
   }, []);
 
   // Get the orders for the logged-in user

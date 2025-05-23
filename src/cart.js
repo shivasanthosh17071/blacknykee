@@ -10,8 +10,9 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { AlertCircle, Minus, Plus, Star, CheckCircle } from "lucide-react";
 import { X } from "lucide-react";
+import BASE_URL from "./config/api";
 
-function Cart({ loginStatus }) {
+function Cart({ loginStatus, accountDetails }) {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState("UPI");
@@ -33,7 +34,7 @@ function Cart({ loginStatus }) {
 
   useEffect(() => {
     axios
-      .get(`https://amazon-backend-k8m7.onrender.com/${loginStatus.Id}/cart`)
+      .get(`${BASE_URL}/${loginStatus.Id}/cart`)
       .then((res) => {
         console.log(res);
         setCartItems(res.data.cartItems);
@@ -63,9 +64,7 @@ function Cart({ loginStatus }) {
 
   const handleDecrement = (item) => {
     axios
-      .put(
-        `https://amazon-backend-k8m7.onrender.com/decreaseQuantity/${loginStatus.Id}/${item.ProductId}`
-      )
+      .put(`${BASE_URL}/decreaseQuantity/${loginStatus.Id}/${item.ProductId}`)
       .then((res) => {
         setCartItems(res.data.cartItems);
         toast.info("Item quantity decreased");
@@ -75,9 +74,7 @@ function Cart({ loginStatus }) {
 
   const handleIncrement = (item) => {
     axios
-      .put(
-        `https://amazon-backend-k8m7.onrender.com/increaseQuantity/${loginStatus.Id}/${item.ProductId}`
-      )
+      .put(`${BASE_URL}/increaseQuantity/${loginStatus.Id}/${item.ProductId}`)
       .then((res) => {
         setCartItems(res.data.cartItems);
         toast.success("Item quantity increased");
@@ -104,6 +101,7 @@ function Cart({ loginStatus }) {
 
   const handleOrderNow = async () => {
     const orderData = {
+      customerId: accountDetails.Email,
       status: "Confirmed",
       paymentMethod: paymentMethod,
       totalAmount: totalPrice,
@@ -117,10 +115,11 @@ function Cart({ loginStatus }) {
       })),
     };
     try {
-      await axios.post(
-        `https://amazon-backend-k8m7.onrender.com/${loginStatus.Id}/order`,
-        orderData
-      );
+      await axios
+        .post(`${BASE_URL}/${loginStatus.Id}/order`, orderData)
+        .then((res) => {
+          console.log(res);
+        });
       toast.success("Order placed successfully");
       dispatch(clearCart());
       setShowConfirmModal(false);

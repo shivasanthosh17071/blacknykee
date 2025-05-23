@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import BASE_URL from "./config/api";
 
 function Register({ setRegisterForm }) {
   const [register, setRegister] = useState({
@@ -29,7 +30,7 @@ function Register({ setRegisterForm }) {
     const { Name, Email, PhoneNumber, Password, Role } = register;
     if (Name && Email && PhoneNumber && Password && Role !== "") {
       axios
-        .post("https://amazon-backend-k8m7.onrender.com/signup", register)
+        .post(`${BASE_URL}/signup`, register)
         .then((res) => {
           console.log(res);
           if (res.data.success) {

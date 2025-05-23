@@ -133,7 +133,7 @@ function App() {
             element={
               loginStatus?.Status == true && loginStatus?.Role == 0 ? (
                 <Cart
-                  filteredProducts={filteredProducts}
+                  accountDetails={accountDetails}
                   loginStatus={loginStatus}
                 />
               ) : (

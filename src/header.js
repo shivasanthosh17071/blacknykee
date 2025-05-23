@@ -6,6 +6,7 @@ import Login from "./login";
 import Register from "./register";
 import axios from "axios";
 import blackNykee from "./Images/BLacknykee.png";
+import BASE_URL from "./config/api";
 const categories = [
   "All",
   "Mobile",
@@ -66,7 +67,7 @@ const Header = ({
   useEffect(() => {
     if (loginStatus.Id) {
       axios
-        .get(`https://amazon-backend-k8m7.onrender.com/${loginStatus.Id}/cart`)
+        .get(`${BASE_URL}/${loginStatus.Id}/cart`)
         .then((res) => {
           console.log(res?.data?.cartItems?.length);
           setCartLength(res?.data?.cartItems?.length);
@@ -98,7 +99,7 @@ const Header = ({
             navigate("/");
             setShowDropdown(false);
           }}
-          style={{ width: "210px", margin: "0px", cursor: "pointer" }}
+          style={{ width: "205px", margin: "0px", cursor: "pointer" }}
           src={blackNykee}
         />
 
@@ -204,7 +205,8 @@ const Header = ({
         </nav>
 
         <div className="d-flex align-items-center gap-3">
-          {loginStatus.Status && (
+          {
+            //person icon
             <i
               className="bi bi-person text-white fs-5"
               onClick={() => {
@@ -216,7 +218,7 @@ const Header = ({
               }}
               style={{ cursor: "pointer" }}
             />
-          )}
+          }
 
           {isAdmin ? (
             ""
@@ -296,7 +298,7 @@ const Header = ({
               <span
                 onClick={() => {
                   setShowDropdown(!showDropdown);
-                  setIsMenuOpen(false);
+                  // setIsMenuOpen(false);
                 }}
               >
                 Collections
@@ -326,6 +328,7 @@ const Header = ({
                   navigate("/uploadProducts");
                   setIsMenuOpen(false);
                   setIsMenuOpen(false);
+                  setShowDropdown(!showDropdown);
                 }}
               >
                 Sell Products
@@ -338,6 +341,7 @@ const Header = ({
                   navigate("/orders");
                   setIsMenuOpen(false);
                   setIsMenuOpen(false);
+                  setShowDropdown(!showDropdown);
                 }}
               >
                 Returns & Orders
@@ -346,6 +350,7 @@ const Header = ({
             <li
               onClick={() => {
                 setIsMenuOpen(false);
+                setShowDropdown(!showDropdown);
               }}
               className="py-2 border-bottom border-secondary text-white"
             >

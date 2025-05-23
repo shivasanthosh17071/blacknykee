@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import BASE_URL from "./config/api";
 function Account({ accountDetails, setAccountDetails, loginStatus }) {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState(accountDetails);
@@ -8,9 +9,7 @@ function Account({ accountDetails, setAccountDetails, loginStatus }) {
   const [selectedUser, setSelectedUser] = useState(null);
   const navigate = useNavigate();
   useEffect(() => {
-    axios("https://amazon-backend-k8m7.onrender.com/getusers").then((res) =>
-      setUsers(res.data)
-    );
+    axios(`${BASE_URL}/getusers`).then((res) => setUsers(res.data));
   }, []);
 
   const handleChange = (e) => {
@@ -24,10 +23,7 @@ function Account({ accountDetails, setAccountDetails, loginStatus }) {
   // };
   const handleSave = async () => {
     try {
-      const response = await axios.put(
-        "https://amazon-backend-k8m7.onrender.com/updateuser",
-        formData
-      );
+      const response = await axios.put(`${BASE_URL}/updateuser`, formData);
       if (response.status === 200) {
         setAccountDetails(formData);
         setEditMode(false);
@@ -265,7 +261,7 @@ function Account({ accountDetails, setAccountDetails, loginStatus }) {
 
           {/* Modal */}
           <div
-            style={{ marginTop: "50px" }}
+            style={{ marginTop: "50px", paddingBottom: "50px" }}
             className="modal fade "
             id="userOrdersModal"
             tabIndex="-1"
