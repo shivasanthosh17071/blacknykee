@@ -1,5 +1,6 @@
+"use client";
+
 import { useState, useEffect } from "react";
-import { Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Footer from "./footer";
 
@@ -9,6 +10,7 @@ export default function Home({ loginStatus }) {
   const isAdmin = loginStatus.Status && loginStatus.Role === 1;
   const isCustomer = loginStatus.Status && loginStatus.Role === 0;
   const navigate = useNavigate();
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -17,6 +19,7 @@ export default function Home({ loginStatus }) {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
   const reasons = [
     {
       title: "Curated Quality",
@@ -39,6 +42,7 @@ export default function Home({ loginStatus }) {
       icon: "bi-headset",
     },
   ];
+
   const collections = [
     {
       title: "Fashion & Accessories",
@@ -71,6 +75,7 @@ export default function Home({ loginStatus }) {
       link: "/customerDashboard",
     },
   ];
+
   const steps = [
     {
       title: "Browse",
@@ -101,76 +106,233 @@ export default function Home({ loginStatus }) {
 
   return (
     <div style={{ color: "white" }}>
-      {" "}
+      <style>
+        {`
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          
+          @keyframes slideInLeft {
+            from {
+              opacity: 0;
+              transform: translateX(-50px);
+            }
+            to {
+              opacity: 1;
+              transform: translateX(0);
+            }
+          }
+          
+          @keyframes slideInRight {
+            from {
+              opacity: 0;
+              transform: translateX(50px);
+            }
+            to {
+              opacity: 1;
+              transform: translateX(0);
+            }
+          }
+          
+          @keyframes pulse {
+            0%, 100% {
+              transform: scale(1);
+            }
+            50% {
+              transform: scale(1.05);
+            }
+          }
+          
+          @keyframes float {
+            0%, 100% {
+              transform: translateY(0px);
+            }
+            50% {
+              transform: translateY(-10px);
+            }
+          }
+          
+          .animate-fadeInUp {
+            animation: fadeInUp 0.8s ease-out;
+          }
+          
+          .animate-slideInLeft {
+            animation: slideInLeft 0.8s ease-out;
+          }
+          
+          .animate-slideInRight {
+            animation: slideInRight 0.8s ease-out;
+          }
+          
+          .animate-pulse {
+            animation: pulse 2s infinite;
+          }
+          
+          .animate-float {
+            animation: float 3s ease-in-out infinite;
+          }
+          
+          .hero-btn {
+            background: linear-gradient(90deg,rgb(137, 16, 16),rgb(255, 0, 0));
+            border: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 51, 51, 0.3);
+          }
+          
+          .hero-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 51, 51, 0.4);
+            background: linear-gradient(45deg,rgb(0, 0, 0),rgb(252, 0, 0));
+          }
+          
+          .feature-card {
+            transition: all 0.3s ease;
+            background: linear-gradient(45deg,rgb(255, 0, 0),rgb(0, 0, 0));
+            border: 1px solid #333;
+           
+          }
+          
+          .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(255, 51, 51, 0.2);
+            border-color: #ff3333;
+          }
+          
+          .collection-card {
+            transition: all 0.4s ease;
+            overflow: hidden;
+            border-radius: 15px;
+          }
+          
+          .collection-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+          }
+          
+          .collection-card img {
+            transition: transform 0.4s ease;
+          }
+          
+          .collection-card:hover img {
+            transform: scale(1.1);
+          }
+          
+          .step-circle {
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+          }
+          
+          .step-circle:hover {
+            transform: scale(1.1);
+            background: linear-gradient(135deg, #ff3333 0%,rgba(255, 0, 0, 0.84) 100%);
+          }
+          
+          .contact-form {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border: 1px solid #333;
+          }
+          
+          .form-control:focus {
+            border-color: #ff3333;
+            box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.78);
+          }
+          
+          .section-title {
+            position: relative;
+            display: inline-block;
+          }
+          
+          .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(45deg,rgb(0, 0, 0),rgb(255, 0, 0));
+            border-radius: 2px;
+          }
+        `}
+      </style>
+
       <section
         className="position-relative d-flex align-items-center justify-content-center"
         style={{
           minHeight: "100vh",
-          backgroundImage:
-            "linear-gradient(rgb(0, 0, 0), rgba(255, 0, 0, 0.73))",
+          background:
+            "linear-gradient(135deg, #000000 0%,rgb(255, 0, 0) 50%,rgb(3, 1, 5) 100%)",
           backgroundSize: "cover",
           backgroundPosition: "center",
           marginTop: "0",
         }}
       >
         <div className="container text-center py-5">
-          <h1 className="display-3 fw-bold mb-3" style={{ color: "#ffffff" }}>
+          <h1
+            className="display-3 fw-bold mb-3 animate-fadeInUp"
+            style={{ color: "#ffffff" }}
+          >
             Welcome to <span style={{ color: "#ff3333" }}>Blacknykee</span> —
             Shop Bold. Shop Smart.
           </h1>
-          <p className="fs-5 mb-5 mx-auto" style={{ maxWidth: "800px" }}>
+          <p
+            className="fs-5 mb-5 mx-auto animate-fadeInUp"
+            style={{ maxWidth: "800px", animationDelay: "0.s" }}
+          >
             Experience premium quality products, unbeatable deals, and a smooth
             shopping experience that puts you first.
           </p>
           <button
-            className="btn btn-lg fw-bold px-5 py-3 rounded-pill"
-            style={{
-              backgroundColor: "#ff3333",
-              color: "white",
-              transition: "all 0.3s ease",
-              ":hover": {
-                backgroundColor: "#cc0000",
-                transform: "translateY(-3px)",
-                boxShadow: "0 10px 20px rgba(255, 51, 51, 0.3)",
-              },
-            }}
+            className="btn btn-lg fw-bold px-5 py-3 rounded-pill hero-btn animate-pulse"
+            style={{ animationDelay: "0.6s" }}
             onClick={() =>
               navigate(isAdmin ? "/adminDashboard" : "/customerDashboard")
             }
           >
-            PLAY BOLD
+            SHOP BOLD
           </button>
         </div>
       </section>
+
       <section
         className="py-5 text-white"
         style={{
-          backgroundColor: "",
-          backgroundImage:
-            " linear-gradient(to left , rgba(255, 255, 255, 0), rgba(0, 119, 255, 0.06))",
+          background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
         }}
       >
         <div className="container py-5">
-          <h2 className="text-center text-black mb-5 fw-bold">
+          <h2 className="text-center text-black mb-5 fw-bold section-title animate-fadeInUp">
             Why Shop with <span style={{ color: "#ff3333" }}>Blacknykee</span>?
           </h2>
 
-          <div className="row g-4  text-white">
+          <div className="row g-4 text-white">
             {reasons.map((reason, index) => (
               <div key={index} className="col-md-6 col-lg-3">
                 <div
-                  className="card h-100 border-0 text-center p-4"
-                  style={{ backgroundColor: "#1a1a1a" }}
+                  className="card  h-100 border-0 text-center p-4 feature-card animate-fadeInUp"
+                  style={{ animationDelay: `${index * 0.2}s` }}
                 >
                   <div className="card-body d-flex flex-column align-items-center">
                     <i
-                      className={`bi ${reason.icon} fs-1 mb-3`}
-                      style={{ color: "#ff3333" }}
+                      className={`bi ${reason.icon} fs-1 mb-3 animate-float`}
+                      style={{
+                        color: "#ff3333",
+                        animationDelay: `${index * 0.5}s`,
+                      }}
                     ></i>
-                    <h3 className="fs-5 fw-bold mb-2  text-white">
+                    <h3 className="fs-5 fw-bold mb-2 text-white">
                       {reason.title}
                     </h3>
-                    <p className="text-secondary mb-0">{reason.description}</p>
+                    <p className="text-secondary text-black mb-0">
+                      {reason.description}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -178,15 +340,18 @@ export default function Home({ loginStatus }) {
           </div>
         </div>
       </section>
+
       <section
-        className="py-5 "
+        className="py-5"
         style={{
-          backgroundImage:
-            "linear-gradient(to left ,rgb(255, 255, 255), rgb(255, 255, 255))",
+          background: "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)",
         }}
       >
         <div className="container py-5">
-          <h2 className="text-center  mb-5 fw-bold" style={{ color: "red" }}>
+          <h2
+            className="text-center mb-5 fw-bold section-title animate-fadeInUp"
+            style={{ color: "red" }}
+          >
             Featured Collections -
             <span className="text-black"> explore our curated picks !</span>
           </h2>
@@ -195,14 +360,8 @@ export default function Home({ loginStatus }) {
             {collections.map((collection, index) => (
               <div key={index} className="col-md-6 col-lg-4">
                 <div
-                  className="card border-0 rounded-3 overflow-hidden position-relative"
-                  style={{
-                    transition: "all 0.3s ease",
-                    ":hover": {
-                      transform: "translateY(-10px)",
-                      boxShadow: "0 15px 30px rgba(255, 51, 51, 0.2)",
-                    },
-                  }}
+                  className="card border-0 rounded-3 overflow-hidden position-relative collection-card animate-slideInLeft"
+                  style={{ animationDelay: `${index * 0.2}s` }}
                 >
                   <img
                     src={collection.image || "/placeholder.svg"}
@@ -224,8 +383,11 @@ export default function Home({ loginStatus }) {
                       <span
                         className="btn btn-sm rounded-pill"
                         style={{
-                          backgroundColor: "#ff3333",
+                          background:
+                            "linear-gradient(45deg,rgb(0, 0, 0),rgb(255, 0, 0))",
                           color: "white",
+                          border: "none",
+                          transition: "all 0.3s ease",
                         }}
                         onClick={() => navigate(collection.link)}
                       >
@@ -239,16 +401,24 @@ export default function Home({ loginStatus }) {
           </div>
         </div>
       </section>
-      <section className="py-5" style={{ backgroundColor: "#111111" }}>
+
+      <section
+        className="py-5"
+        style={{
+          background: "linear-gradient(135deg, #111111 0%, #1a1a1a 100%)",
+        }}
+      >
         <div className="container py-5">
-          <h2 className="text-center mb-5 fw-bold" style={{ color: "white" }}>
+          <h2
+            className="text-center mb-5 fw-bold section-title animate-fadeInUp"
+            style={{ color: "white" }}
+          >
             How It Works
           </h2>
 
           <div className="row justify-content-center">
             <div className="col-lg-10">
               <div className="d-flex flex-column flex-md-row justify-content-between position-relative">
-                {/* Connecting Line */}
                 <div
                   className="position-absolute d-none d-md-block"
                   style={{
@@ -256,7 +426,8 @@ export default function Home({ loginStatus }) {
                     left: "60px",
                     right: "60px",
                     height: "2px",
-                    backgroundColor: "#333333",
+                    background:
+                      "linear-gradient(90deg, #333333,rgb(255, 0, 0), #333333)",
                     zIndex: 0,
                   }}
                 ></div>
@@ -264,21 +435,20 @@ export default function Home({ loginStatus }) {
                 {steps.map((step, index) => (
                   <div
                     key={index}
-                    className="d-flex flex-column align-items-center text-center mb-4 mb-md-0 position-relative"
-                    style={{ zIndex: 1 }}
+                    className="d-flex flex-column align-items-center text-center mb-4 mb-md-0 position-relative animate-fadeInUp"
+                    style={{ zIndex: 1, animationDelay: `${index * 0.2}s` }}
                   >
                     <div
-                      className="d-flex align-items-center justify-content-center rounded-circle mb-3"
+                      className="d-flex align-items-center justify-content-center rounded-circle mb-3 step-circle"
                       style={{
                         width: "80px",
                         height: "80px",
-                        backgroundColor: "#1a1a1a",
-                        border: "2px solid #ff3333",
+                        border: " 2px solid rgb(255, 255, 255)",
                       }}
                     >
                       <i
                         className={`bi ${step.icon} fs-3`}
-                        style={{ color: "#ff3333" }}
+                        style={{ color: "rgb(255, 0, 0)" }}
                       ></i>
                     </div>
                     <h3 className="fs-5 fw-bold mb-1">{step.title}</h3>
@@ -295,11 +465,17 @@ export default function Home({ loginStatus }) {
           </div>
         </div>
       </section>
-      <section className="py-5 bg-black">
+
+      <section
+        className="py-5"
+        style={{
+          background: "linear-gradient(135deg, #000000 0%, #1a1a1a 100%)",
+        }}
+      >
         <div className="container py-5">
           <div className="row align-items-center">
-            <div className="col-lg-6 mb-4 mb-lg-0">
-              <h2 className="fw-bold mb-4">We're Here For You</h2>
+            <div className="col-lg-6 mb-4 mb-lg-0 animate-slideInLeft">
+              <h2 className="fw-bold mb-4 section-title">We're Here For You</h2>
               <p className="mb-4">
                 Our dedicated customer support team is available 24/7 to assist
                 you with any questions, concerns, or issues you may have. We're
@@ -339,11 +515,8 @@ export default function Home({ loginStatus }) {
                 </div>
               </div>
             </div>
-            <div className="col-lg-6">
-              <div
-                className="card border-0 rounded-3 overflow-hidden"
-                style={{ backgroundColor: "#1a1a1a" }}
-              >
+            <div className="col-lg-6 animate-slideInRight">
+              <div className="card border-0 rounded-3 overflow-hidden contact-form">
                 <div className="card-body p-4">
                   <h3 className="fs-5 fw-bold mb-4 text-white">
                     Send Us a Message
@@ -356,7 +529,7 @@ export default function Home({ loginStatus }) {
                         placeholder="Your Name"
                         style={{
                           padding: "12px 15px",
-                          placeholderColor: "white",
+                          borderRadius: "8px",
                         }}
                       />
                     </div>
@@ -365,7 +538,7 @@ export default function Home({ loginStatus }) {
                         type="email"
                         className="form-control bg-dark border-0 text-white"
                         placeholder="Your Email"
-                        style={{ padding: "12px 15px" }}
+                        style={{ padding: "12px 15px", borderRadius: "8px" }}
                       />
                     </div>
                     <div className="mb-3">
@@ -373,16 +546,16 @@ export default function Home({ loginStatus }) {
                         className="form-control bg-dark border-0 text-white"
                         rows={4}
                         placeholder="Your Message"
-                        style={{ padding: "12px 15px" }}
+                        style={{ padding: "12px 15px", borderRadius: "8px" }}
                       ></textarea>
                     </div>
                     <button
                       type="submit"
-                      className="btn w-100"
+                      className="btn w-100 feature-card"
                       style={{
-                        backgroundColor: "#ff3333",
-                        color: "white",
                         padding: "12px",
+                        borderRadius: "8px",
+                        color: "white",
                       }}
                     >
                       Send Message

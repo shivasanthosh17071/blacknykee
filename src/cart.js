@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+"use client";
+
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { clearCart } from "./reducer";
@@ -9,7 +11,6 @@ import AddressForm from "./addressForm";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { AlertCircle, Minus, Plus, Star, CheckCircle } from "lucide-react";
-import { X } from "lucide-react";
 import BASE_URL from "./config/api";
 
 function Cart({ loginStatus, accountDetails }) {
@@ -123,7 +124,7 @@ function Cart({ loginStatus, accountDetails }) {
       toast.success("Order placed successfully");
       dispatch(clearCart());
       setShowConfirmModal(false);
-      setOrderPlaced(true); // Show confirmation modal
+      setOrderPlaced(true);
     } catch (err) {
       console.error(err);
       toast.error("Failed to place order");
@@ -131,91 +132,253 @@ function Cart({ loginStatus, accountDetails }) {
   };
 
   return (
-    <div className="container py-3 mt-3">
+    <div className="container py-4 mt-3">
+      <style>
+        {`
+          @keyframes slideIn {
+            from {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          
+          @keyframes fadeIn {
+            from {
+              opacity: 0;
+            }
+            to {
+              opacity: 1;
+            }
+          }
+          
+          // @keyframes bounce {
+          //   0%, 20%, 50%, 80%, 100% {
+          //     transform: translateY(0);
+          //   }
+          //   40% {
+          //     transform: translateY(-10px);
+          //   }
+          //   60% {
+          //     transform: translateY(-5px);
+          //   }
+          // }
+          
+          .cart-item {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            animation: slideIn 0.5s ease-out;
+          }
+          
+          .cart-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            border-color: #dc3545;
+          }
+          
+          .cart-image {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+          }
+          
+          // .cart-image:hover {
+          //   border-color: #dc3545;
+          //   transform: scale(1.05);
+          // }
+          
+          .quantity-btn {
+            width: 35px;
+            height: 35px;
+            // border-radius: 50%;
+            border: 2px solid;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          
+          // .quantity-btn:hover {
+          //   transform: scale(1.1);
+          //   animation: bounce 0.6s;
+          // }
+          
+          .order-summary {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 2px solid #dc3545;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 100px;
+          }
+          
+          .btn-payment {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            border: none;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+          }
+          
+          .btn-payment:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(108, 117, 125, 0.4);
+          }
+          
+          .btn-order {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            border: none;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+          }
+          
+          .btn-order:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
+          }
+          
+          .empty-cart {
+            animation: fadeIn 1s ease-out;
+            text-align: center;
+            padding: 60px 20px;
+          }
+          
+          .empty-cart img {
+            transition: transform 0.3s ease;
+          }
+          
+          .empty-cart img:hover {
+            transform: scale(1.1);
+          }
+          
+          .modal-content {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+          }
+          
+          .rating-display {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border-radius: 15px;
+            padding: 4px 8px;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+          }
+          
+          .rating-display.warning {
+            background: linear-gradient(135deg, #fd7e14 0%, #ffc107 100%);
+          }
+        `}
+      </style>
+
       {/* Main Cart and Summary */}
       <div className="row">
         {/* Left column: Cart items */}
         <div className="col-lg-8 mb-4">
+          <div className="d-flex align-items-center mb-4">
+            <h3 className="fw-bold text-danger mb-0">
+              <i className="bi bi-cart3 me-2"></i>
+              Shopping Cart
+            </h3>
+            <span className="badge bg-danger ms-2 rounded-pill">
+              {groupedItemsArray.length} items
+            </span>
+          </div>
+
           {loading ? (
             Array(3)
               .fill()
               .map((_, i) => (
-                <div key={i} className="card mb-3 p-3 shadow-sm">
+                <div key={i} className="cart-item mb-4 p-4">
                   <div className="row g-3">
                     <div className="col-4">
-                      <Skeleton height={100} />
+                      <Skeleton height={120} borderRadius={10} />
                     </div>
                     <div className="col">
-                      <Skeleton height={15} width={`60%`} />
-                      <Skeleton height={15} width={`40%`} />
-                      <Skeleton height={15} width={`50%`} />
+                      <Skeleton height={20} width={`70%`} className="mb-2" />
+                      <Skeleton height={16} width={`50%`} className="mb-2" />
+                      <Skeleton height={16} width={`60%`} />
                     </div>
                   </div>
                 </div>
               ))
           ) : groupedItemsArray.length === 0 ? (
-            <div className="text-center text-muted">
-              <h2>Your Cart is Empty</h2>
-              <p>Browse and add your favorite items to the cart.</p>
+            <div className="empty-cart">
+              <h2 className="text-muted mb-3">Your Cart is Empty</h2>
+              <p className="text-muted mb-4">
+                Browse and add your favorite items to the cart.
+              </p>
               <img
                 src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png"
-                className="img-fluid mt-3"
-                style={{ maxWidth: "150px" }}
+                className="img-fluid mb-4"
+                style={{ maxWidth: "200px" }}
                 alt="Empty Cart"
               />
               <br />
               <button
-                className="btn mt-4 btn-outline-primary"
+                className="btn btn-outline-danger btn-lg px-5"
                 onClick={() => navigate("/customerDashboard")}
               >
+                <i className="bi bi-shop me-2"></i>
                 Browse Products
               </button>
             </div>
           ) : (
             groupedItemsArray.map((item, i) => (
-              <div key={i} className="card mb-3 p-3 shadow-sm">
+              <div
+                key={i}
+                className="cart-item mb-4 p-4"
+                style={{ animationDelay: `${i * 0.1}s` }}
+              >
                 <div className="d-flex flex-row align-items-center">
                   <img
-                    src={item.Thumbnail}
+                    src={item.Thumbnail || "/placeholder.svg"}
                     alt={item.Title}
-                    className="me-3 rounded"
+                    className="cart-image me-4"
                     style={{
-                      width: "100px",
-                      height: "100px",
+                      width: "120px",
+                      height: "120px",
                       objectFit: "cover",
                       cursor: "pointer",
-                      border: "1px solid #ddd",
                     }}
                     onClick={() => navigate(`/product/${item.ProductId}`)}
                   />
                   <div className="flex-grow-1">
-                    <h6 className="fw-semibold">{item.Title}</h6>
-                    <p className="mb-1">
-                      <strong className="text-danger">₹ {item.Price}</strong>
-                    </p>
+                    <h6 className="fw-bold mb-2" style={{ color: "#333" }}>
+                      {item.Title}
+                    </h6>
                     <p className="mb-2">
-                      <strong>Rating:</strong>{" "}
+                      <strong className="text-danger fs-5">
+                        ₹ {item.Price}
+                      </strong>
+                    </p>
+                    <p className="mb-3">
                       <span
-                        className={`text-${
-                          item?.Rating >= 4 ? "success" : "warning"
+                        className={`rating-display ${
+                          item?.Rating >= 4 ? "" : "warning"
                         }`}
                       >
-                        {item.Rating} <Star size={16} fill="gold" />
+                        {item.Rating} <Star size={12} fill="white" />
                       </span>
                     </p>
                     <div className="d-flex align-items-center">
                       <button
-                        className="btn btn-outline-danger btn-sm me-2"
+                        className="btn quantity-btn border-danger text-danger me-3"
                         onClick={() => handleDecrement(item)}
                       >
-                        <Minus size={18} />
+                        <Minus size={20} />
                       </button>
-                      <span className="mx-2">{item.Quantity}</span>
+                      <span className="fw-bold fs-5 mx-3">{item.Quantity}</span>
                       <button
-                        className="btn btn-outline-success btn-sm"
+                        className="btn quantity-btn border-success text-success"
                         onClick={() => handleIncrement(item)}
                       >
-                        <Plus size={18} />
+                        <Plus size={16} />
                       </button>
                     </div>
                   </div>
@@ -228,39 +391,52 @@ function Cart({ loginStatus, accountDetails }) {
         {/* Right column: Order Summary */}
         <div className="col-lg-4">
           {groupedItemsArray.length > 0 && !loading && (
-            <div className="card p-3 shadow-sm mb-4">
-              <h5 className="text-center">Order Summary</h5>
+            <div className="order-summary p-4">
+              <h5 className="text-center fw-bold text-danger mb-4">
+                <i className="bi bi-receipt me-2"></i>
+                Order Summary
+              </h5>
               <hr />
               {groupedItemsArray.map((item, i) => (
-                <div key={i} className="d-flex justify-content-between mb-2">
-                  <span>{item.Title}</span>
-                  <span>
-                    {item.Quantity} × ₹{item.Price}
+                <div
+                  key={i}
+                  className="d-flex justify-content-between mb-3 pb-2 border-bottom"
+                >
+                  <div>
+                    <small className="text-muted">{item.Title}</small>
+                    <br />
+                    <span className="fw-bold">
+                      {item.Quantity} × ₹{item.Price}
+                    </span>
+                  </div>
+                  <span className="fw-bold text-danger">
+                    ₹{item.Price * item.Quantity}
                   </span>
                 </div>
               ))}
               <hr />
-              <p>
-                <strong>Total: ₹{totalPrice}</strong>
-              </p>
+              <div className="d-flex justify-content-between mb-4">
+                <h5 className="fw-bold">Total:</h5>
+                <h5 className="fw-bold text-danger">₹{totalPrice}</h5>
+              </div>
 
               <AddressForm address={address} setAddress={setAddress} />
 
               <button
-                style={{ background: "gray", color: "white" }}
-                className="btn  w-100 mt-3"
+                className="btn btn-payment text-white w-100 mt-4 py-3 fw-bold"
                 onClick={() => setShowPaymentModal(true)}
               >
+                <i className="bi bi-credit-card me-2"></i>
                 Select Payment Method
               </button>
 
               {paymentSuccess && (
                 <button
-                  style={{ background: "red", color: "white" }}
-                  className="btn  w-100 mt-2"
+                  className="btn btn-order text-white w-100 mt-3 py-3 fw-bold"
                   onClick={() => setShowConfirmModal(true)}
                 >
-                  Order Now
+                  <i className="bi bi-bag-check me-2"></i>
+                  Place Order
                 </button>
               )}
             </div>
@@ -272,7 +448,10 @@ function Cart({ loginStatus, accountDetails }) {
       {showPaymentModal && (
         <div
           className="modal fade show d-block"
-          style={{ background: "#00000080" }}
+          style={{
+            background: "rgba(0, 0, 0, 0.6)",
+            backdropFilter: "blur(5px)",
+          }}
         >
           <div className="modal-dialog modal-dialog-centered">
             {address.line1 &&
@@ -280,68 +459,93 @@ function Cart({ loginStatus, accountDetails }) {
             address.state &&
             address.country &&
             address.postalCode ? (
-              <div className="modal-content p-3">
-                <h5>Select Payment Method</h5>
-                <div className="form-check">
-                  <input
-                    type="radio"
-                    className="form-check-input"
-                    value="UPI"
-                    checked={paymentMethod === "UPI"}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                  />
-                  <label className="form-check-label">UPI</label>
+              <div className="modal-content p-4">
+                <div className="d-flex justify-content-between align-items-center mb-4">
+                  <h5 className="fw-bold text-danger mb-0">
+                    <i className="bi bi-credit-card me-2"></i>
+                    Select Payment Method
+                  </h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setShowPaymentModal(false)}
+                  ></button>
                 </div>
-                <div className="form-check">
-                  <input
-                    type="radio"
-                    className="form-check-input"
-                    value="COD"
-                    checked={paymentMethod === "COD"}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                  />
-                  <label className="form-check-label">Cash on Delivery</label>
+
+                <div className="mb-3">
+                  <div className="form-check p-3 border rounded mb-3">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      value="UPI"
+                      checked={paymentMethod === "UPI"}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                    />
+                    <label className="form-check-label fw-bold">
+                      <i className="bi bi-phone me-2 text-primary"></i>
+                      UPI Payment
+                    </label>
+                  </div>
+                  <div className="form-check p-3 border rounded">
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      value="COD"
+                      checked={paymentMethod === "COD"}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                    />
+                    <label className="form-check-label fw-bold">
+                      <i className="bi bi-cash me-2 text-success"></i>
+                      Cash on Delivery
+                    </label>
+                  </div>
                 </div>
 
                 {paymentMethod === "UPI" && (
-                  <input
-                    className="form-control mt-3"
-                    placeholder="Enter your UPI ID"
-                    value={upiID}
-                    onChange={(e) => setUpiID(e.target.value)}
-                  />
+                  <div className="mb-4">
+                    <label className="form-label fw-bold">UPI ID</label>
+                    <input
+                      className="form-control form-control-lg"
+                      placeholder="Enter your UPI ID (e.g., user@paytm)"
+                      value={upiID}
+                      onChange={(e) => setUpiID(e.target.value)}
+                    />
+                  </div>
                 )}
 
-                <div className="mt-3 d-flex justify-content-end">
+                <div className="d-flex justify-content-end gap-2">
                   <button
-                    className="btn btn-secondary me-2"
+                    className="btn btn-secondary px-4"
                     onClick={() => setShowPaymentModal(false)}
                   >
                     Cancel
                   </button>
                   <button
-                    className="btn btn-success"
+                    className="btn btn-success px-4"
                     onClick={handlePaymentSubmit}
                   >
+                    <i className="bi bi-check-circle me-1"></i>
                     Confirm Payment
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="modal-content p-3">
-                <div className="d-flex justify-content-between">
-                  <p>
-                    <AlertCircle className="me-1 h-5 w-5 text-yellow-600" />{" "}
-                    Alert
-                  </p>
-                  <p onClick={() => setShowPaymentModal(false)}>
-                    <X />
-                  </p>
+              <div className="modal-content p-4">
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <div className="d-flex align-items-center">
+                    <AlertCircle className="me-2 text-warning" size={24} />
+                    <h5 className="mb-0 text-warning">Address Required</h5>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setShowPaymentModal(false)}
+                  ></button>
                 </div>
-                <div className="flex items-start gap-3 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-md mb-4">
-                  <p>
-                    Please fill in the address form before proceeding with
-                    payment.
+                <div className="alert alert-warning border-0">
+                  <p className="mb-0">
+                    Please fill in the complete address form before proceeding
+                    with payment.
                   </p>
                 </div>
               </div>
@@ -354,25 +558,32 @@ function Cart({ loginStatus, accountDetails }) {
       {showConfirmModal && (
         <div
           className="modal fade show d-block"
-          style={{ background: "#00000080" }}
+          style={{
+            background: "rgba(0, 0, 0, 0.6)",
+            backdropFilter: "blur(5px)",
+          }}
         >
           <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content p-3">
-              <h5>Confirm Your Order</h5>
-              <p>Are you sure you want to place the order?</p>
-              <div className="mt-3 d-flex justify-content-end">
+            <div className="modal-content p-4">
+              <div className="text-center mb-4">
+                <i className="bi bi-question-circle text-warning fs-1 mb-3"></i>
+                <h5 className="fw-bold">Confirm Your Order</h5>
+                <p className="text-muted">
+                  Are you sure you want to place this order?
+                </p>
+              </div>
+              <div className="d-flex justify-content-center gap-3">
                 <button
-                  style={{ background: "gray", color: "white" }}
-                  className="btn  me-2"
+                  className="btn btn-secondary px-4"
                   onClick={() => setShowConfirmModal(false)}
                 >
                   Cancel
                 </button>
                 <button
-                  style={{ background: "red", color: "white" }}
-                  className="btn "
+                  className="btn btn-danger px-4"
                   onClick={handleOrderNow}
                 >
+                  <i className="bi bi-check-circle me-1"></i>
                   Yes, Place Order
                 </button>
               </div>
@@ -385,21 +596,30 @@ function Cart({ loginStatus, accountDetails }) {
       {orderPlaced && (
         <div
           className="modal fade show d-block"
-          style={{ background: "#00000080" }}
+          style={{
+            background: "rgba(0, 0, 0, 0.6)",
+            backdropFilter: "blur(5px)",
+          }}
         >
           <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content text-center p-4">
-              <CheckCircle size={48} className="text-success mb-3 mx-auto" />
-              <h4 className="mb-2">Thank you for your order!</h4>
-              <p className="mb-3">Your order has been placed successfully.</p>
+            <div className="modal-content text-center p-5">
+              <CheckCircle size={64} className="text-success mb-4 mx-auto" />
+              <h4 className="mb-3 fw-bold text-success">
+                Order Placed Successfully!
+              </h4>
+              <p className="mb-4 text-muted">
+                Thank you for your purchase. Your order has been confirmed and
+                will be processed shortly.
+              </p>
               <button
-                className="btn btn-primary"
+                className="btn btn-primary px-5 py-2"
                 onClick={() => {
                   setOrderPlaced(false);
                   navigate("/orders");
                 }}
               >
-                Go to My Orders
+                <i className="bi bi-list-check me-2"></i>
+                View My Orders
               </button>
             </div>
           </div>

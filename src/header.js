@@ -80,23 +80,20 @@ const Header = ({
 
   return (
     <header
-      style={{ zIndex: "10000" }}
+      style={{ zIndex: "10000", borderBottom: "4px solid  rgb(211, 10, 30)" }}
       className={`fixed top-0 w-100  bg-black shadow-sm py-1  position-fixed top-0  `}
     >
       <div className="container d-flex justify-content-between align-items-center">
-        {/* <h1
-          className="m-0 fs-3 fw-bold text-white"
-          style={{ cursor: "pointer" }}
-          onClick={() => {
-            navigate("/");
-            setShowDropdown(false);
-          }}
+        <button
+          className="d-md-none btn border-0 text-white"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
-          Blacknykee
-        </h1> */}
+          <Menu size={24} />
+        </button>
         <img
           onClick={() => {
-            navigate("/");
+            navigate(isAdmin ? "/adminDashboard" : "/customerDashboard");
+            setIsMenuOpen(false);
             setShowDropdown(false);
           }}
           style={{ width: "205px", margin: "0px", cursor: "pointer" }}
@@ -205,20 +202,38 @@ const Header = ({
         </nav>
 
         <div className="d-flex align-items-center gap-3">
-          {
+          {loginStatus.Status == true ? (
+            <button
+              onClick={() => {
+                navigate("/account");
+              }}
+              className="d-flex align-items-center justify-content-center"
+              style={{
+                width: "25px",
+                height: "25px",
+                borderRadius: "50%",
+                backgroundColor: "red",
+                color: "white",
+                border: "none",
+                fontWeight: "bold",
+                fontSize: "1rem",
+                cursor: "pointer",
+              }}
+            >
+              {accountDetails.Email.charAt(0).toUpperCase()}
+            </button>
+          ) : (
             //person icon
             <i
               className="bi bi-person text-white fs-5"
               onClick={() => {
                 if (loginStatus.Status == null) {
                   setShowLoginModal(true);
-                } else if (loginStatus.Status == true) {
-                  navigate("/account");
                 }
               }}
               style={{ cursor: "pointer" }}
             />
-          }
+          )}
 
           {isAdmin ? (
             ""
@@ -262,13 +277,6 @@ const Header = ({
               onClick={() => setShowLoginModal(true)}
             />
           )}
-
-          <button
-            className="d-md-none btn border-0 text-white"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            <Menu size={24} />
-          </button>
         </div>
       </div>
 
