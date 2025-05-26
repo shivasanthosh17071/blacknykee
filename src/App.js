@@ -1,6 +1,7 @@
 import logo from "./logo.svg";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import FloatingCartButton from "./FloatingCartButton";
 
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -64,7 +65,7 @@ function App() {
           setShowDropdown={setShowDropdown}
           showDropdown={showDropdown}
         />
-
+        <FloatingCartButton loginStatus={loginStatus} />
         <Routes>
           <Route path="/x" element={<LoginRegisterPage />} />
           {/* <Route path="/register" element={<Register />} /> */}

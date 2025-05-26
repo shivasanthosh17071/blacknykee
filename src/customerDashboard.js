@@ -502,7 +502,7 @@ function CustomerDashboard({
 
       {showLoginModal && (
         <div
-          className="modal fade show d-block"
+          className="modal fade show d-block mt-4"
           tabIndex="-1"
           style={{
             backgroundColor: "rgba(0,0,0,0.6)",
@@ -511,13 +511,13 @@ function CustomerDashboard({
         >
           <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div className="modal-content border-0 shadow-lg">
-              <div className="modal-header bg-primary text-white">
+              <div className="modal-header ">
                 <h5 className="modal-title">
                   {registerForm ? "Sign Up" : "Login"}
                 </h5>
                 <button
                   type="button"
-                  className="btn-close btn-close-white"
+                  className="btn-close "
                   onClick={() => setShowLoginModal(false)}
                 ></button>
               </div>

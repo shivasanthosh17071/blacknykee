@@ -235,7 +235,7 @@ const Header = ({
             />
           )}
 
-          {isAdmin ? (
+          {/* {isAdmin ? (
             ""
           ) : (
             <div
@@ -260,7 +260,7 @@ const Header = ({
                 </span>
               )}
             </div>
-          )}
+          )} */}
 
           {loginStatus.Status ? (
             <i

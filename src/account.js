@@ -2,12 +2,15 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BASE_URL from "./config/api";
+
 function Account({ accountDetails, setAccountDetails, loginStatus }) {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState(accountDetails);
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [activeTab, setActiveTab] = useState("profile");
   const navigate = useNavigate();
+
   useEffect(() => {
     axios(`${BASE_URL}/getusers`).then((res) => setUsers(res.data));
   }, []);
@@ -16,11 +19,7 @@ function Account({ accountDetails, setAccountDetails, loginStatus }) {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  console.log(formData);
-  // const handleSave = () => {
-  //   setAccountDetails(formData);
-  //   setEditMode(false);
-  // };
+
   const handleSave = async () => {
     try {
       const response = await axios.put(`${BASE_URL}/updateuser`, formData);
@@ -33,17 +32,61 @@ function Account({ accountDetails, setAccountDetails, loginStatus }) {
       }
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert("Update faild : Please check all feilds properly.");
+      alert("Update failed: Please check all fields properly.");
     }
+  };
+
+  const handleSignOut = () => {
+    localStorage.clear();
+    navigate("/");
+    window.location.reload();
   };
 
   const orders =
     users.find((u) => u.Email === accountDetails.Email)?.orders || [];
 
   return (
-    <div className="container  px-2 px-md-4 " style={{ marginTop: "50px" }}>
-      {loginStatus.Role === 0 ? (
-        // Customer View
+    <div className="container px-2 px-md-4 mt-4">
+      <ul className="nav nav-tabs mb-4">
+        <li className="nav-item">
+          <button
+            className={`nav-link ${activeTab === "profile" ? "active" : ""}`}
+            onClick={() => setActiveTab("profile")}
+          >
+            Profile
+          </button>
+        </li>
+        <li className="nav-item">
+          <button
+            className={`nav-link ${activeTab === "wishlist" ? "active" : ""}`}
+            onClick={() => setActiveTab("wishlist")}
+          >
+            Wishlist
+          </button>
+        </li>
+        {loginStatus.Role === 1 && (
+          <li className="nav-item">
+            <button
+              className={`nav-link ${activeTab === "admin" ? "active" : ""}`}
+              onClick={() => setActiveTab("admin")}
+            >
+              Admin Panel
+            </button>
+          </li>
+        )}
+        <li className="nav-item ms-auto">
+          <button
+            className="nav-link text-danger"
+            data-bs-toggle="modal"
+            data-bs-target="#signOutModal"
+          >
+            Sign Out
+          </button>
+        </li>
+      </ul>
+
+      {/* Tabs Content */}
+      {activeTab === "profile" && (
         <div className="row g-4">
           <div className="col-md-4 text-center d-flex flex-column align-items-center border-end">
             <img
@@ -88,13 +131,18 @@ function Account({ accountDetails, setAccountDetails, loginStatus }) {
                     ],
                   },
                   { label: "Mobile", key: "PhoneNumber", type: "tel" },
-                  { label: "Email", key: "Email", type: "email" },
+                  {
+                    label: "Email",
+                    key: "Email",
+                    type: "email",
+                    readonly: true,
+                  },
                   { label: "Address", key: "Address", type: "textarea" },
-                ].map(({ label, key, type, options, suffix }) => (
+                ].map(({ label, key, type, options, suffix, readonly }) => (
                   <tr key={key}>
                     <td className="text-muted fw-medium">{label}:</td>
                     <td>
-                      {editMode ? (
+                      {editMode && !readonly ? (
                         type === "textarea" ? (
                           <textarea
                             name={key}
@@ -199,8 +247,16 @@ function Account({ accountDetails, setAccountDetails, loginStatus }) {
             )}
           </div>
         </div>
-      ) : (
-        // Admin View
+      )}
+
+      {activeTab === "wishlist" && (
+        <div className="text-center p-4">
+          <h5 className="text-muted">Your Wishlist is empty.</h5>
+          <p>Add products to your wishlist to see them here.</p>
+        </div>
+      )}
+
+      {activeTab === "admin" && loginStatus.Role === 1 && (
         <div className="p-4 bg-white rounded shadow-sm">
           <h3 className="text-primary fw-bold text-center mb-4">User List</h3>
           <div className="table-responsive">
@@ -258,88 +314,122 @@ function Account({ accountDetails, setAccountDetails, loginStatus }) {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
 
-          {/* Modal */}
-          <div
-            style={{ marginTop: "50px", paddingBottom: "50px" }}
-            className="modal fade "
-            id="userOrdersModal"
-            tabIndex="-1"
-            aria-labelledby="userOrdersModalLabel"
-            aria-hidden="true"
-          >
-            <div className="modal-dialog modal-lg modal-dialog-centered">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title">
-                    Orders of {selectedUser?.Name}
-                  </h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    data-bs-dismiss="modal"
-                  ></button>
-                </div>
-                <div className="modal-body">
-                  {selectedUser?.orders?.length === 0 ? (
-                    <p className="text-muted">No orders found.</p>
-                  ) : (
-                    selectedUser?.orders?.map((order, index) => (
-                      <div
-                        key={index}
-                        className="border rounded p-3 mb-4 shadow-sm"
-                      >
-                        <div className="d-flex justify-content-between">
-                          <div>
-                            <strong>Date:</strong>{" "}
-                            {new Date(order.orderDate).toLocaleDateString()}
-                          </div>
-                          <div>
-                            <strong>Status:</strong>{" "}
-                            <span className="badge bg-warning text-dark">
-                              {order.status}
-                            </span>
-                          </div>
-                        </div>
-                        <div>
-                          <strong>Payment:</strong> {order.paymentMethod} |{" "}
-                          <strong>Total:</strong> ₹{order.totalAmount}
-                        </div>
-                        <hr />
-                        {order.items.map((item, i) => (
-                          <div
-                            key={i}
-                            className="d-flex align-items-center mb-2 pb-2 border-bottom"
-                          >
-                            <img
-                              src={item.Thumbnail}
-                              alt={item.Title}
-                              width="60"
-                              height="60"
-                              className="rounded me-3"
-                            />
-                            <div>
-                              <div className="fw-semibold">{item.Title}</div>
-                              <small>
-                                ₹{item.Price} x {item.Quantity}
-                              </small>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ))
-                  )}
-                </div>
-                <div className="modal-footer">
-                  <button className="btn btn-secondary" data-bs-dismiss="modal">
-                    Close
-                  </button>
-                </div>
-              </div>
+      {/* Sign Out Confirmation Modal */}
+      <div
+        className="modal fade"
+        id="signOutModal"
+        tabIndex="-1"
+        aria-labelledby="signOutModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="signOutModalLabel">
+                Confirm Sign Out
+              </h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+            <div className="modal-body">Are you sure you want to sign out?</div>
+            <div className="modal-footer">
+              <button className="btn btn-secondary" data-bs-dismiss="modal">
+                Cancel
+              </button>
+              <button
+                className="btn btn-danger"
+                data-bs-dismiss="modal"
+                onClick={handleSignOut}
+              >
+                Sign Out
+              </button>
             </div>
           </div>
         </div>
-      )}
+      </div>
+
+      {/* Admin Orders Modal */}
+      <div
+        className="modal fade"
+        id="userOrdersModal"
+        tabIndex="-1"
+        aria-labelledby="userOrdersModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-lg modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Orders of {selectedUser?.Name}</h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+            <div className="modal-body">
+              {selectedUser?.orders?.length === 0 ? (
+                <p className="text-muted">No orders found.</p>
+              ) : (
+                selectedUser?.orders?.map((order, index) => (
+                  <div
+                    key={index}
+                    className="border rounded p-3 mb-4 shadow-sm"
+                  >
+                    <div className="d-flex justify-content-between">
+                      <div>
+                        <strong>Date:</strong>{" "}
+                        {new Date(order.orderDate).toLocaleDateString()}
+                      </div>
+                      <div>
+                        <strong>Status:</strong>{" "}
+                        <span className="badge bg-warning text-dark">
+                          {order.status}
+                        </span>
+                      </div>
+                    </div>
+                    <div>
+                      <strong>Payment:</strong> {order.paymentMethod} |{" "}
+                      <strong>Total:</strong> ₹{order.totalAmount}
+                    </div>
+                    <hr />
+                    {order.items.map((item, i) => (
+                      <div
+                        key={i}
+                        className="d-flex align-items-center mb-2 pb-2 border-bottom"
+                      >
+                        <img
+                          src={item.Thumbnail}
+                          alt={item.Title}
+                          className="rounded me-3"
+                          width="60"
+                          height="60"
+                        />
+                        <div>
+                          <div className="fw-semibold">{item.Title}</div>
+                          <small>
+                            ₹{item.Price} x {item.Quantity}
+                          </small>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ))
+              )}
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-secondary" data-bs-dismiss="modal">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
