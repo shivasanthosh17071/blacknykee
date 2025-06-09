@@ -20,6 +20,9 @@ import Footer from "./footer";
 import ProductDetails from "./productDetails";
 import Home from "./home";
 import LoginRegisterPage from "./loginRegisterPage";
+import AdminOrders from "./adminOrders";
+import ReferralProgram from "./ReferralProgram";
+import ContactPage from "./ContactPage";
 function App() {
   const [loginStatus, setLoginStatus] = useState({
     Status: null,
@@ -182,6 +185,33 @@ function App() {
           />
           <Route path="*" element={<Home loginStatus={loginStatus} />} />
           <Route path="/" element={<Home loginStatus={loginStatus} />} />
+          <Route
+            path="/adminOrders"
+            element={
+              loginStatus?.Status == true && loginStatus?.Role == 1 ? (
+                <AdminOrders
+                  accountDetails={accountDetails}
+                  loginStatus={loginStatus}
+                />
+              ) : (
+                <Navigate to={"/"} />
+              )
+            }
+          />
+          <Route
+            path="/referal"
+            element={
+              loginStatus?.Status == true && loginStatus?.Role == 0 ? (
+                <ReferralProgram />
+              ) : (
+                <Navigate to={"/"} />
+              )
+            }
+          />
+          <Route
+            path="/contact"
+            element={<ContactPage/>}
+          />
         </Routes>
       </BrowserRouter>
     </div>

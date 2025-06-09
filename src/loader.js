@@ -5,31 +5,19 @@ const Loader = () => {
   const svgRef = useRef(null);
 
   useEffect(() => {
-    const boxes = Array.from(svgRef.current.querySelectorAll(".box"));
-
+    const circles = svgRef.current.querySelectorAll(".circle");
     gsap.set(svgRef.current, { visibility: "visible" });
 
-    const tl = gsap.timeline({ repeat: -1 });
-
-    boxes.forEach((box, index) => {
+    const tl = gsap.timeline({ repeat: -1, yoyo: true });
+    circles.forEach((circle, i) => {
       tl.to(
-        box,
+        circle,
         {
-          rotation: "+=360",
-          scale: 1.2,
-          transformOrigin: "50% 50%",
-          duration: 0.6,
-          ease: "elastic.out(1, 0.5)",
+          y: -20,
+          duration: 0.5,
+          ease: "power1.inOut",
         },
-        index * 0.1
-      ).to(
-        box,
-        {
-          scale: 1,
-          duration: 0.4,
-          ease: "power2.inOut",
-        },
-        index * 0.1 + 0.6
+        i * 0.1
       );
     });
 
@@ -37,51 +25,27 @@ const Loader = () => {
   }, []);
 
   return (
-    <div style={styles.backdrop}>
+    <div
+      className="d-flex justify-content-center align-items-center  position-fixed top-0 start-0 w-100 h-100"
+      style={{ zIndex: 1050 ,
+        background:"  linear-gradient(45deg,rgba(0, 0, 0, 0.25),rgba(0, 0, 0, 0.28))"
+      }}
+    >
       <svg
         ref={svgRef}
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 400 100"
-        style={styles.svg}
+        width="160"
+        height="60"
+        viewBox="0 0 160 60"
+        style={{ visibility: "hidden" }}
       >
-        <g className="box" transform="translate(40, 20)">
-          <rect width="50" height="50" fill="rgb(255, 0, 25)" rx="8" />
-        </g>
-        <g className="box" transform="translate(100, 20)">
-          <rect width="50" height="50" fill="rgb(255, 247, 0)" rx="8" />
-        </g>
-        <g className="box" transform="translate(160, 20)">
-          <rect width="50" height="50" fill=" white" rx="8" />
-        </g>
-        <g className="box" transform="translate(220, 20)">
-          <rect width="50" height="50" fill="	#E0E0E0" rx="8" />
-        </g>
-        <g className="box" transform="translate(280, 20)">
-          <rect width="50" height="50" fill="#8ECAE6" rx="8" />
-        </g>
+        <circle className="circle" cx="20" cy="30" r="10" fill="#FF595E" />
+        <circle className="circle" cx="50" cy="30" r="10" fill="#FFCA3A" />
+        <circle className="circle" cx="80" cy="30" r="10" fill="#8AC926" />
+        <circle className="circle" cx="110" cy="30" r="10" fill="#1982C4" />
+        <circle className="circle" cx="140" cy="30" r="10" fill="#6A4C93" />
       </svg>
     </div>
   );
-};
-
-const styles = {
-  backdrop: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    height: "100vh",
-    width: "100vw",
-    backgroundColor: "rgba(61, 61, 61, 0.35)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 9999,
-  },
-  svg: {
-    width: "240px",
-    height: "80px",
-    visibility: "hidden",
-  },
 };
 
 export default Loader;

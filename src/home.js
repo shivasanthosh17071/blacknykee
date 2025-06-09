@@ -182,7 +182,7 @@ export default function Home({ loginStatus }) {
           .hero-btn {
             background: linear-gradient(90deg,rgb(137, 16, 16),rgb(255, 0, 0));
             border: none;
-            transition: all 0.3s ease;
+            transition: all 0.8s ease;
             box-shadow: 0 4px 15px rgba(255, 51, 51, 0.3);
           }
           
@@ -268,7 +268,7 @@ export default function Home({ loginStatus }) {
         style={{
           minHeight: "100vh",
           background:
-            "linear-gradient(135deg, #000000 0%,rgb(255, 0, 0) 50%,rgb(3, 1, 5) 100%)",
+            "linear-gradient(180deg,rgb(0, 0, 0) 50%,rgb(255, 0, 0) 100%)",
           backgroundSize: "cover",
           backgroundPosition: "center",
           marginTop: "0",
@@ -448,7 +448,7 @@ export default function Home({ loginStatus }) {
                     >
                       <i
                         className={`bi ${step.icon} fs-3`}
-                        style={{ color: "rgb(255, 0, 0)" }}
+                        style={{ color: "rgb(255, 255, 255)" }}
                       ></i>
                     </div>
                     <h3 className="fs-5 fw-bold mb-1">{step.title}</h3>

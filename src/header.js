@@ -190,9 +190,22 @@ const Header = ({
               Returns & Orders
             </span>
           )}
+          {isAdmin && (
+            <span
+              onClick={() => {
+                setShowDropdown(false);
+                navigate("/adminOrders");
+              }}
+              className="text-white fw-medium px-2"
+              style={{ cursor: "pointer" }}
+            >
+              Customer Orders
+            </span>
+          )}
           <span
             onClick={() => {
               setShowDropdown(false);
+              navigate('/contact')
             }}
             className="text-white fw-medium px-2"
             style={{ cursor: "pointer" }}
@@ -234,33 +247,6 @@ const Header = ({
               style={{ cursor: "pointer" }}
             />
           )}
-
-          {/* {isAdmin ? (
-            ""
-          ) : (
-            <div
-              onClick={() => {
-                if (loginStatus.Status == null) {
-                  setShowLoginModal(true);
-                } else if (loginStatus.Status == true) {
-                  navigate("/cart");
-                }
-              }}
-              style={{ cursor: "pointer" }}
-              className="position-relative"
-            >
-              <i
-                className={`bi ${
-                  cartLength > 0 ? "bi-cart-check-fill" : "bi-cart"
-                } text-white fs-5`}
-              />
-              {cartLength > 0 && (
-                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                  {cartLength}
-                </span>
-              )}
-            </div>
-          )} */}
 
           {loginStatus.Status ? (
             <i
@@ -355,10 +341,23 @@ const Header = ({
                 Returns & Orders
               </li>
             )}
+            {isAdmin && (
+              <li
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  setShowDropdown(!showDropdown);
+                  navigate("/adminOrders");
+                }}
+                className="py-2 border-bottom border-secondary text-white"
+              >
+                Customer orders
+              </li>
+            )}
             <li
               onClick={() => {
                 setIsMenuOpen(false);
                 setShowDropdown(!showDropdown);
+                navigate('/contact')
               }}
               className="py-2 border-bottom border-secondary text-white"
             >

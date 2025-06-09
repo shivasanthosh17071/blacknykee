@@ -8,7 +8,6 @@ import { addItem, addFav } from "./reducer";
 import { ToastContainer, toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
-import "./ProductDetails.css";
 import Login from "./login";
 import Register from "./register";
 import Loader from "./loader";
@@ -30,6 +29,9 @@ function ProductDetails({
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [pageReRender, setPageReRender] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showAlreadyInWishlist, setShowAlreadyInWishlist] = useState(false);
+  const [wishlistSuccess, setWishlistSuccess] = useState(false);
+  const [showRemoveSuccess, setShowRemoveSuccess] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -93,26 +95,6 @@ function ProductDetails({
     }
   }
 
-  const handleAddToWishlist = () => {
-    if (loginStatus.Status == null) {
-      setShowLoginModal(true);
-    } else if (loginStatus.Status == true) {
-      dispatch(
-        addFav({
-          Title: product.Title,
-          Price: product.Price,
-          Category: product.Category,
-          Rating: product.Rating,
-          Thumbnail: productImage,
-          Id: product._id,
-        })
-      );
-      toast.success("Added to Wishlist ", {
-        position: "bottom-right",
-      });
-    }
-  };
-
   function deleteProduct(id) {
     axios
       .delete(`${BASE_URL}/deleteProduct/${id}`)
@@ -130,7 +112,61 @@ function ProductDetails({
         console.error(err);
       });
   }
+  const addToWishlist = async (userId, product) => {
+    console.log(userId, product);
+    try {
+      const newProduct = {
+        ProductId: product._id,
+        Title: product.Title,
+        Price: product.Price,
+        // Thumbnail: product.Thumbnail,
+        Thumbnail: `data:image/jpeg;base64,${Buffer.from(
+          product.Thumbnail.data
+        ).toString("base64")}`,
+      };
+      // console.log(userId, newProduct);
 
+      axios
+        .post(`${BASE_URL}/addWishlist`, { userId, newProduct })
+        .then((res) => {
+          console.log(res);
+          setWishlistSuccess(true);
+        })
+        .catch((err) => {
+          if (err.response?.data?.alreadyExists) {
+            console.log("alreadyExists");
+            setShowAlreadyInWishlist(true); // show central modal
+
+            //here add a central bootstrap modol ,display  already added to wishlist
+          } else {
+            console.log("server error");
+          }
+          console.log(err?.response?.data?.alreadyExists);
+        });
+    } catch (err) {
+      console.log(err);
+      alert(err.response?.data || "Failed to add to wishlist");
+    }
+  };
+  const handleDeleteWishlist = async () => {
+    try {
+      const userId = accountDetails._id;
+      const productId = product._id;
+      console.log(userId, productId);
+      axios
+        .delete(`${BASE_URL}/deleteWishlist/${userId}/${productId}`)
+        .then((res) => {
+          console.log(res);
+          setShowRemoveSuccess(true);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (err) {
+      console.error("Failed to delete wishlist item", err);
+      alert("Error removing item");
+    }
+  };
   return (
     <div className="container mt-5">
       <style>
@@ -291,6 +327,29 @@ function ProductDetails({
             height: 300px;
             border-radius: 12px;
           }
+             .modal.fade.show .modal-dialog {
+      animation: slideIn 0.2s ease-out;
+    }
+    .modal.fade.hide .modal-dialog {
+      animation: slideOut 0.3s ease-in forwards;
+    }
+    @keyframes slideIn {
+      from {
+        transform: translateY(-20%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    @keyframes slideOut {
+      to {
+        transform: translateY(20%);
+        opacity: 0;
+      }
+    }
+  
         `}
       </style>
 
@@ -315,7 +374,9 @@ function ProductDetails({
                 />
                 <button
                   className="btn wishlist-btn position-absolute top-0 end-0 m-3 rounded-circle"
-                  onClick={handleAddToWishlist}
+                  onClick={() => {
+                    addToWishlist(accountDetails._id, product);
+                  }}
                   title="Add to Wishlist"
                   style={{ width: "45px", height: "45px", padding: 0 }}
                 >
@@ -404,12 +465,14 @@ function ProductDetails({
                     >
                       <i className="bi bi-cart4 me-2"></i> Add to Cart
                     </button>
-                    <button
-                      className="btn btn-wishlist fw-bold py-2"
-                      onClick={handleAddToWishlist}
+                    {/* <button
+                      className="btn btn- fw-bold py-2"
+                      onClick={() => {
+                        addToWishlist(accountDetails._id, product);
+                      }}
                     >
                       <i className="bi bi-heart me-2"></i> Add to Wishlist
-                    </button>
+                    </button> */}
                   </div>
                 )}
               </>
@@ -491,7 +554,7 @@ function ProductDetails({
 
       {showLoginModal && (
         <div
-          className="modal fade show d-block"
+          className="modal fade show d-block mt-5"
           tabIndex="-1"
           style={{
             backgroundColor: "rgba(0,0,0,0.6)",
@@ -500,13 +563,13 @@ function ProductDetails({
         >
           <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div className="modal-content border-0 shadow-lg">
-              <div className="modal-header bg-danger text-white">
+              <div className="modal-header  text-dark">
                 <h5 className="modal-title">
                   {registerForm ? "Sign Up" : "Login"}
                 </h5>
                 <button
                   type="button"
-                  className="btn-close btn-close-white"
+                  className="btn-close btn-close-light"
                   onClick={() => setShowLoginModal(false)}
                 ></button>
               </div>
@@ -583,12 +646,119 @@ function ProductDetails({
           </div>
         </div>
       )}
+      {/* modols */}
+      {/* Success Modal */}
+      {wishlistSuccess && (
+        <div
+          className="modal fade show d-block"
+          tabIndex="-1"
+          role="dialog"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content border-0 shadow-lg">
+              <div className="modal-body text-center p-5">
+                <i className="bi bi-check-circle-fill text-success display-4 mb-3"></i>
+                <h5 className="text-success mb-3">Item Added Successfully!</h5>
+                <p className="text-muted mb-4">
+                  The item has been added to your wishlist successfully.
+                </p>
+                <button
+                  className="btn btn-dark fw-bold px-4"
+                  onClick={() => setWishlistSuccess(false)}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Already in Wishlist Modal */}
+      {showAlreadyInWishlist && (
+        <div
+          className="modal fade show d-block"
+          tabIndex="-1"
+          role="dialog"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content border-0 shadow-lg">
+              <div
+                style={{
+                  background:
+                    "linear-gradient(45deg,rgb(252, 0, 0),rgb(90, 14, 14))",
+                }}
+                className="modal-header  text-white"
+              >
+                <h5 className="modal-title">
+                  <i className="bi bi-heart-fill me-2"></i> Already in Wishlist
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowAlreadyInWishlist(false)}
+                ></button>
+              </div>
+              <div className="modal-body text-center ">
+                <p className="my-4   ">
+                  You’ve already added this item to your wishlist.
+                </p>
 
+                <button
+                  style={{
+                    background:
+                      "linear-gradient(45deg,rgb(0, 0, 0),rgb(82, 82, 82))",
+                  }}
+                  className=" btn border-0 btn-dark fw-bold "
+                  onClick={() => {
+                    handleDeleteWishlist();
+                    setShowAlreadyInWishlist(false);
+                  }}
+                >
+                  <i className="bi bi-trash me-1"></i> Remove
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Modal */}
+      {showRemoveSuccess && (
+        <div
+          className="modal fade show d-block"
+          tabIndex="-1"
+          role="dialog"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content border-0 shadow-lg">
+              <div className="modal-body text-center p-5">
+                <i className="bi bi-check-circle-fill text-success display-4 mb-3"></i>
+                <h5 className="text-success mb-3">
+                  Item Removed Successfully!
+                </h5>
+                <p className="text-muted mb-4">
+                  The item has been removed from your wishlist.
+                </p>
+                <button
+                  className="btn btn-dark fw-bold px-4"
+                  onClick={() => setShowRemoveSuccess(false)}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <ToastContainer
         onClick={() => navigate("/cart")}
         position="bottom-right"
         autoClose={2500}
       />
+      {/* {console.log(accountDetails)} */}
     </div>
   );
 }

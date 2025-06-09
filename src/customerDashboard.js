@@ -286,13 +286,15 @@ function CustomerDashboard({
         <div
           className="filter-container"
           style={{
-            display: "flex",
-            position: "sticky",
-            top: "64px",
-            zIndex: "100",
-            overflowX: "auto",
-            background: "",
-          }}
+    display: "flex",
+    position: "sticky",
+    top: "64px",
+    zIndex: "100",
+    overflowX: "auto",
+    background: "rgba(255, 255, 255, 0.22)", // semi-transparent white
+    backdropFilter: "blur(8px)",             // blur effect
+    WebkitBackdropFilter: "blur(8px)",       // for Safari support
+  }}
         >
           {/* offers */}
           <div
